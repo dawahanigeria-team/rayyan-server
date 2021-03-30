@@ -22,9 +22,6 @@ const UserSchema = new Schema({
     picture: {
         type: String,
     },
-    nin:{
-        type: String,
-    },
     isAdmin: {
         type: Boolean,
         default: false,

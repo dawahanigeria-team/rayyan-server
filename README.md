@@ -1,4 +1,4 @@
-# Assetly REST API Node.js Server
+# Rayyan APP REST API Node.js Server
 
 A REST APIs using Node.js, Express, Mongoose, and Passport.
 
@@ -11,8 +11,8 @@ If you would still prefer to do the installation manually, follow these steps:
 Clone the repo:
 
 ```bash
-git clone https://github.com/Assetly/assetly-server.git
-cd assetly-server
+git clone https://github.com/dawahanigeria-team/rayyan-server.git
+cd rayyan-server
 ```
 
 Install the dependencies:
