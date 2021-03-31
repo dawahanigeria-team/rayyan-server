@@ -53,6 +53,9 @@ mongoose.connect(db, {
 
 // set up routes
 app.use('/api', routes);
+app.use("/", (req, res) => {
+  res.status(200).send({ message: "Wowza, Server is up!" });
+});
 
 // handle celebrate errors and server errors
 app.use(validationMiddleware.handleValidationError);
