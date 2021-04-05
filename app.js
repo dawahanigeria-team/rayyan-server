@@ -6,6 +6,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const config = require('./config');
 const { validationMiddleware, rateLimiter } = require('./middlewares');
+const errorHandler = require('./middlewares/error')
 
 const routes = require('./routes');
 
@@ -57,6 +58,7 @@ app.use("/", (req, res) => {
   res.status(200).send({ message: "Wowza, Server is up!" });
 });
 
+app.use(errorHandler);
 // handle celebrate errors and server errors
 app.use(validationMiddleware.handleValidationError);
 
