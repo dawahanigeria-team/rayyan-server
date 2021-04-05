@@ -1,5 +1,6 @@
 const Fast = require('./../models/fast');
 const asyncHandler = require('../middlewares/asyncHandler')
+
 // @desc Post Add New Fast
 // @route Post /api/fast/
 // @access Private
