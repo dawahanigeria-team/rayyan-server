@@ -23,7 +23,7 @@ module.exports.registerUser = async (req, res) => {
       name: user.firstName,
     });
 
-    res.status(201).send({
+    res.status(201).json({
       success: true,
       token: token,
       data: user,
@@ -94,7 +94,7 @@ module.exports.loginWithEmailAndPassword = (req, res, next) => {
     }
     const token = tokenService.createToken({ id: user.id, email: user.email });
 
-    res.send({
+    res.json({
       success: true,
       token: token,
       data: user,
