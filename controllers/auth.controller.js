@@ -23,7 +23,11 @@ module.exports.registerUser = async (req, res) => {
       name: user.firstName,
     });
 
-    res.status(201).send({ user, token });
+    res.status(201).send({
+      success: true,
+      token: token,
+      data: user,
+    });
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
@@ -90,7 +94,11 @@ module.exports.loginWithEmailAndPassword = (req, res, next) => {
     }
     const token = tokenService.createToken({ id: user.id, email: user.email });
 
-    res.send({ user, token });
+    res.send({
+      success: true,
+      token: token,
+      data: user,
+    });
   })(req, res, next);
 };
 

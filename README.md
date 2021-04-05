@@ -135,7 +135,7 @@ List of available routes:
 ## Mailer Service
 
 You can send emails to users with sendMail function that takes the data and the custom template name
-which is available in `templtaes` directory using [ejs](https://ejs.co/).
+which is available in `templates` directory using [ejs](https://ejs.co/).
 
 for adding more email templates don't forget to define it in getAttachments() function.
 

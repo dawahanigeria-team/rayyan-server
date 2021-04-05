@@ -20,7 +20,6 @@ const registerSchema = {
         email: Joi.string().email().required(),
         password: Joi.string().required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,30}$/).message(passwordMessage),
         picture: Joi.string(),
-        nin: Joi.string(),
         isAdmin: Joi.boolean().default(false)
     }),
 }
