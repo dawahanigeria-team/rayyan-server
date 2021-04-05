@@ -44,7 +44,10 @@ module.exports.createUser = async (req, res) => {
 
         mailerService.sendMail(user.email, 'Confirm Email', 'confirm-email', { url: url, name: user.firstName })
 
-        res.status(201).send(user);
+        res.status(201).json({
+          success: true,
+          data: user,
+        });
     } catch (error) {
         res.status(400).send({ message: error.message });
     }
