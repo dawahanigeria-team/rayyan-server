@@ -8,10 +8,10 @@ const router = Router();
 
 // local auth
 router.route('/register')
-    .post(celebrate(userValidation.registerSchema, opts), authController.registerUser);
+    .post(authController.registerUser);
 
 router.route('/login')
-    .post(celebrate(userValidation.loginSchema, opts), authController.loginWithEmailAndPassword);
+    .post(authController.loginWithEmailAndPassword);
 
 // password reset
 router.route('/password-reset/get-code')
