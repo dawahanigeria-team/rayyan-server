@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { celebrate } = require("celebrate");
-const { authMiddleware } = require("../middlewares");
+const { requireAuth, isAdmin } = authMiddleware;
 const {createNewFast} = require('./../controllers/fast.controller')
 
 
