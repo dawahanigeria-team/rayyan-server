@@ -11,5 +11,5 @@ services:
       - /app/node_modules
       - ./: /app
     environment:
-      - MONGO_URI:'mongodb+srv://halaqaat:Islam123@cluster0.l8yuu.mongodb.net'
-      - MONGO_DB_NAME: assetly
+      - MONGO_URI: "mongodb+srv://halaqaat:Islam123@cluster0.l8yuu.mongodb.net"
+      - MONGO_DB_NAME: "assetly"
