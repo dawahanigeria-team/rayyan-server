@@ -1,4 +1,3 @@
-const { isCelebrateError } = require('celebrate');
 
 const handleValidationError = (error, req, res, next) => {
     if (isCelebrateError(error)) {
