@@ -1,7 +1,5 @@
 const { Router } = require('express');
 const { userController } = require('../controllers');
-const { celebrate } = require('celebrate');
-const { opts, userValidation } = require('../validations');
 const { authMiddleware } = require('../middlewares');
 const { requireAuth, isAdmin } = authMiddleware;
 
@@ -12,7 +10,7 @@ router.route('/')
     .post([
         requireAuth,
         isAdmin,
-        celebrate(userValidation.registerSchema, opts)
+        
     ], userController.createUser);
 
 
@@ -20,12 +18,12 @@ router.route('/profile')
     .get(requireAuth, userController.getUserProfile)
     .put([
         requireAuth,
-        celebrate(userValidation.updateSchema, opts),
+        
     ], userController.updateUserProfile);
 
 
 router.route('/get-activation-email')
-    .get(celebrate(userValidation.sendRequestEmailSchema, opts), userController.sendConfirmEmail);
+    .get(userController.sendConfirmEmail);
 
 router.route('/confirmation/:token')
     .get(userController.confirmEmail);
@@ -35,8 +33,7 @@ router.route('/:id')
     .delete([requireAuth, isAdmin], userController.deleteUser)
     .put([
         requireAuth,
-        isAdmin,
-        celebrate(userValidation.updateSchema, opts)
+        isAdmin
     ], userController.updateUser);
 
 module.exports = router;

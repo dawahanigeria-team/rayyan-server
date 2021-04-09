@@ -60,7 +60,6 @@ app.use("/", (req, res) => {
 
 app.use(errorHandler);
 // handle celebrate errors and server errors
-app.use(validationMiddleware.handleValidationError);
 
 const PORT = config.PORT || 3000;
 app.listen(PORT, () => console.log(`server running on PORT: ${PORT}`));

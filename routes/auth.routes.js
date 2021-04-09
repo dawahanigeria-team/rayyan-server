@@ -1,8 +1,6 @@
 const { Router } = require('express');
 const { authController } = require('../controllers');
 const passport = require('passport');
-const { celebrate } = require('celebrate');
-const { opts, userValidation } = require('../validations');
 
 const router = Router();
 
@@ -15,10 +13,10 @@ router.route('/login')
 
 // password reset
 router.route('/password-reset/get-code')
-    .post(celebrate(userValidation.sendRequestEmailSchema, opts), authController.sendResetPasswordEmail);
+    .post(authController.sendResetPasswordEmail);
 
 router.route('/password-reset/verify/:token')
-    .post(celebrate(userValidation.resetPasswordSchema, opts), authController.resetPassword);
+    .post( authController.resetPassword);
 
 // google auth
 router.route('/google').get(authController.loginWithGoogle);
