@@ -4,7 +4,7 @@ const {createNewFast} = require('./../controllers/fast.controller')
 
 const router = Router();
 
-router.get("/", createNewFast)
+router.route("/").post(createNewFast)
 
 
 module.exports = router;

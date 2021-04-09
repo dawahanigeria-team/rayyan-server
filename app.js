@@ -5,7 +5,7 @@ const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 const config = require('./config');
-const { validationMiddleware, rateLimiter } = require('./middlewares');
+const { rateLimiter } = require('./middlewares');
 const errorHandler = require('./middlewares/error')
 
 const routes = require('./routes');
