@@ -48,13 +48,13 @@ module.exports.createUser = async (req, res) => {
   }
 };
 
-// @desc    Get all users
-// @route   GET /api/users
+// @desc    Get all fasts
+// @route   GET /api/fasts
 // @access  Private/Admin
-module.exports.getUsers = async (req, res) => {
+module.exports.getFasts = async (req, res) => {
   try {
-    const users = await userService.getUsers();
-    res.status(200).send(users);
+    const fasts = await Fast.find({});
+    res.status(200).send(fasts);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
