@@ -15,8 +15,7 @@ module.exports.createNewFast = asyncHandler( async (req, res) => {
 // @route PUT /api/fast/:id
 // @access Private
 module.exports.GetSingleFast = asyncHandler( async (req, res) => {
-    const id = req.params.id;
-    const fast = await  Fast.findOne(id);
+    const fast = await Fast.findOne({ _id: req.params.id });
     res.status(200).json({ message: "success", data: { fast: fast}});
  
 });
