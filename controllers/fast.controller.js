@@ -7,7 +7,7 @@ const asyncHandler = require('../middlewares/asyncHandler')
 module.exports.createNewFast = asyncHandler( async (req, res) => {
 
     const fast = await Fast.create(req.body);
-    res.status(200).send(fast);
+    res.status(201).json({success: true, data: {fast}});
   
 });
 
