@@ -140,31 +140,6 @@ which is available in `templates` directory using [ejs](https://ejs.co/).
 for adding more email templates don't forget to define it in getAttachments() function.
 
 
-## Validation and Authentication middlewares
-
-Request data is validated using [Celebrate](https://github.com/arb/celebrate). Check their github [readme](github.com/arb/celebrate#readme) for more details on how to write Celebrate validation schemas.
-
-The validation schemas are defined in the `validations` directory and are used in the routes by providing them as parameters to the `celebrate` middleware.
-
-```javascript
-const { Router } = require('express');
-const { userController } = require('../controllers');
-const { celebrate } = require('celebrate');
-const { opts, userValidation } = require('../validations');
-const { authMiddleware } = require('../middlewares');
-const { requireAuth, isAdmin } = authMiddleware;
-
-const router = express.Router();
-
-router.route('/').post([
-        requireAuth,
-        isAdmin,
-        celebrate(userValidation.registerSchema, opts)
-    ], userController.createUser);
-```
-
-I wrote handleValidationError() as the error handler middleware for custom celebrate error messaging better than the format of the default errors() middlware
-
 ## License
 
 [MIT](LICENSE)
