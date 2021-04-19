@@ -12,26 +12,20 @@ module.exports.createNewFast = asyncHandler( async (req, res) => {
 });
 
 // @desc Update user profile
-// @route PUT /api/users/profile
+// @route PUT /api/fast/:id
 // @access Private
-module.exports.updateUserProfile = async (req, res) => {
-  try {
-    if (!req.user.isAdmin) {
-      req.body.isAdmin = false;
-    }
-    const user = await userService.updateUserById(req.user.id, req.body);
-    res.status(200).send({ message: "success" });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
+module.exports.GetSingleFast = asyncHandler( async (req, res) => {
+    const fast = await Fast.findOne({ _id: req.params.id });
+    res.status(200).json({ message: "success", data: { fast: fast}});
+ 
+});
 
 // @desc    Create a new user
 // @route   POST /api/users
 // @access  Private/Admin
 module.exports.createUser = async (req, res) => {
   try {
-    const user = await userService.registerUser(req.body);
+    const fast = await userService.registerUser(req.body);
 
     const emailToken = tokenService.createToken(
       { id: user.id, email: user.email },
@@ -53,13 +47,13 @@ module.exports.createUser = async (req, res) => {
   }
 };
 
-// @desc    Get all users
-// @route   GET /api/users
+// @desc    Get all fasts
+// @route   GET /api/fasts
 // @access  Private/Admin
-module.exports.getUsers = async (req, res) => {
+module.exports.getFasts = async (req, res) => {
   try {
-    const users = await userService.getUsers();
-    res.status(200).send(users);
+    const fasts = await Fast.find({});
+    res.status(200).send(fasts);
   } catch (error) {
     res.status(400).send({ message: error.message });
   }

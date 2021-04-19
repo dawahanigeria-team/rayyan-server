@@ -1,10 +1,16 @@
 const { Router } = require("express");
-const {createNewFast} = require('./../controllers/fast.controller')
+const {
+  createNewFast,
+  GetSingleFast,
+  getFasts,
+} = require("./../controllers/fast.controller");
+const { requireAuth } = require("../middlewares/auth.middleware");
 
 
 const router = Router();
 
-router.get("/", createNewFast)
+router.route("/").post(requireAuth, createNewFast).get(getFasts);
+router.route("/:id").get(GetSingleFast);
 
 
 module.exports = router;

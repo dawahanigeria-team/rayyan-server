@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const FastSchema = new Schema(
   {
-    name: { type: String },
+    name: { type: String, required: true},
     status: {
       type: Boolean,
       default: false,
