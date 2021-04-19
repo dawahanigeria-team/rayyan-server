@@ -9,7 +9,7 @@ const { requireAuth } = require("../middlewares/auth.middleware");
 
 const router = Router();
 
-router.route("/").post(requireAuth, createNewFast).get(getFasts);
+router.route("/").post(createNewFast).get(getFasts);
 router.route("/:id").get(GetSingleFast);
 
 
