@@ -1,0 +1,1 @@
+const Fast = require('../models')

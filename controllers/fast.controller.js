@@ -1,23 +1,20 @@
-const Fast = require('./../models/fast');
-const asyncHandler = require('../middlewares/asyncHandler')
+const Fast = require("./../models/fast");
+const asyncHandler = require("../middlewares/asyncHandler");
 
 // @desc Post Add New Fast
 // @route Post /api/fast/
 // @access Private
-module.exports.createNewFast = asyncHandler( async (req, res) => {
-
-    const fast = await Fast.create(req.body);
-    res.status(201).json({success: true, data: {fast}});
-  
+module.exports.createNewFast = asyncHandler(async (req, res) => {
+  const fast = await Fast.create(req.body);
+  res.status(201).json({ success: true, data: { fast } });
 });
 
 // @desc Update user profile
 // @route PUT /api/fast/:id
 // @access Private
-module.exports.GetSingleFast = asyncHandler( async (req, res) => {
-    const fast = await Fast.findOne({ _id: req.params.id });
-    res.status(200).json({ message: "success", data: { fast: fast}});
- 
+module.exports.GetSingleFast = asyncHandler(async (req, res) => {
+  const fast = await Fast.findOne({ _id: req.params.id });
+  res.status(200).json({ message: "success", data: { fast: fast } });
 });
 
 // @desc    Create a new user
@@ -59,10 +56,10 @@ module.exports.getFasts = async (req, res) => {
   }
 };
 
-// @desc    Get user by ID
-// @route   GET /api/users/:id
+// @desc    Update fast by ID
+// @route   GET /api/fast/:id
 // @access  Private/Admin
-module.exports.getUserById = async (req, res) => {
+module.exports.updateSingleFast = async (req, res) => {
   try {
     const user = await userService.getUserById(req.params.id);
     res.status(200).send(user);
@@ -71,73 +68,11 @@ module.exports.getUserById = async (req, res) => {
   }
 };
 
-// @desc    Delete user
-// @route   DELETE /api/users/:id
+// @desc    Delete fast
+// @route   DELETE /api/fast/:id
 // @access  Private/Admin
-module.exports.deleteUser = async (req, res) => {
-  try {
-    const user = await userService.deleteUserById(req.params.id);
-    res.status(200).send({ message: "success" });
-  } catch (error) {
-    res.status(404).send({ message: error.message });
-  }
-};
-
-// @desc    Update user
-// @route   PUT /api/users/:id
-// @access  Private/Admin
-module.exports.updateUser = async (req, res) => {
-  try {
-    const user = await userService.updateUserById(req.params.id, req.body);
-    res.status(200).send({ message: "success" });
-  } catch (error) {
-    res.status(404).send({ message: error.message });
-  }
-};
-
-// @desc Resend confirmation email
-// @route GET /api/users/get-activation-email
-// @access Private
-module.exports.sendConfirmEmail = async (req, res) => {
-  try {
-    const { email } = req.user;
-
-    const user = await userService.getUserByOpts({ email });
-    if (!user) {
-      return res.status(404).send({ message: "user not found" });
-    }
-
-    const emailToken = tokenService.createToken(
-      { id: user.id, email: user.email },
-      config.jwt.JWT_EMAIL_SECRET,
-      "6h"
-    );
-
-    const baseUrl = req.protocol + "://" + req.get("host");
-    const url = baseUrl + `/api/auth/confirmation/${emailToken}`;
-
-    mailerService.sendMail(email, "Confirm Email", "confirm-email", {
-      url: url,
-      name: "",
-    });
-    res.status(200).send({ message: "success" });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
-
-// @desc Confirm user's email
-// @route GET /api/users/confirmation/:token
-// @access Public
-module.exports.confirmEmail = async (req, res) => {
-  try {
-    const { id } = tokenService.verifyToken(
-      req.params.token,
-      config.jwt.JWT_EMAIL_SECRET
-    );
-    const user = await userService.updateUserById(id, { isConfirmed: true });
-    res.status(200).send({ message: "success" });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
+module.exports.deleteFast = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  await Fast.deleteOne({ _id: id });
+  res.status(200).send({ message: "success", data: {} });
+});
