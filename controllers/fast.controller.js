@@ -17,32 +17,16 @@ module.exports.GetSingleFast = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "success", data: { fast: fast } });
 });
 
-// @desc    Create a new user
-// @route   POST /api/users
+// @desc    Get Missed Fast
+// @route   GET /api/fast/missedfast
 // @access  Private/Admin
-module.exports.createUser = async (req, res) => {
-  try {
-    const fast = await userService.registerUser(req.body);
+module.exports.getMissedFasts = asyncHandler( async (req, res) => {
+  const user = req.query.user
+  const fast = await Fast.find({ user: user, status: false });
 
-    const emailToken = tokenService.createToken(
-      { id: user.id, email: user.email },
-      config.jwt.JWT_EMAIL_SECRET,
-      "6h"
-    );
-
-    const baseUrl = req.protocol + "://" + req.get("host");
-    const url = baseUrl + `/api/auth/confirmation/${emailToken}`;
-
-    mailerService.sendMail(user.email, "Confirm Email", "confirm-email", {
-      url: url,
-      name: user.firstName,
-    });
-
-    res.status(201).send(user);
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
+  res.status(200).json({success: true, data: { fast}});
+  
+})
 
 // @desc    Get all fasts
 // @route   GET /api/fasts
