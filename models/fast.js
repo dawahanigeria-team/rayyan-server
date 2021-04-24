@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const FastSchema = new Schema(
   {
-    name: { type: String, required: true},
+    name: { type: String, required: true },
     status: {
       type: Boolean,
       default: false,
@@ -14,6 +14,11 @@ const FastSchema = new Schema(
     },
     date: {
       type: Date,
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
