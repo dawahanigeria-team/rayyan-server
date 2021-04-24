@@ -4,6 +4,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 // @desc Post Add New Fast
 // @route Post /api/fast/
 // @access Private
+
 module.exports.createNewFast = asyncHandler(async (req, res) => {
   const fast = await Fast.create(req.body);
   res.status(201).json({ success: true, data: { fast } });
@@ -31,6 +32,17 @@ module.exports.getMissedFasts = asyncHandler( async (req, res) => {
 // @desc    Get all fasts
 // @route   GET /api/fasts
 // @access  Private/Admin
+module.exports.getFasts = asyncHandler( async (req, res) => {
+    const user  =  req.query.user
+    const fasts = await Fast.find({ user: user});
+    res.status(200).send(fasts);
+  
+});
+
+// @desc    Get all fasts
+// @route   GET /api/fasts
+// @access  Private/Admin
+
 module.exports.getFasts = async (req, res) => {
   try {
     const fasts = await Fast.find({});
