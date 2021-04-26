@@ -55,14 +55,16 @@ module.exports.getFasts = async (req, res) => {
 // @desc    Update fast by ID
 // @route   GET /api/fast/:id
 // @access  Private/Admin
-module.exports.updateSingleFast = async (req, res) => {
-  try {
-    const user = await userService.getUserById(req.params.id);
-    res.status(200).send(user);
-  } catch (error) {
-    res.status(404).send({ message: error.message });
-  }
-};
+module.exports.updateSingleFast = asyncHandler( async (req, res) => {
+ const id = req.params.id;
+    const fast = await Fast.findOneAndUpdate(
+      { _id: id },
+      { $set: { status: true } },
+      { new: true }
+    );
+    res.status(200).send(fast);
+  
+});
 
 // @desc    Delete fast
 // @route   DELETE /api/fast/:id
