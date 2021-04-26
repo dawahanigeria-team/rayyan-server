@@ -43,14 +43,12 @@ module.exports.getFasts = asyncHandler( async (req, res) => {
 // @route   GET /api/fasts
 // @access  Private/Admin
 
-module.exports.getFasts = async (req, res) => {
-  try {
-    const fasts = await Fast.find({});
+module.exports.getFasts = asyncHandler( async (req, res) => {
+const user = req.query.user;
+    const fasts = await Fast.find({user: user});
     res.status(200).send(fasts);
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-};
+ 
+});
 
 // @desc    Update fast by ID
 // @route   GET /api/fast/:id
