@@ -60,7 +60,7 @@ module.exports.updateSingleFast = asyncHandler( async (req, res) => {
       { $set: { status: true } },
       { new: true }
     );
-    res.status(200).send(fast);
+    res.status(200).json({ success: true, data: { fast }});
   
 });
 
