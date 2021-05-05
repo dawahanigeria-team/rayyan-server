@@ -14,6 +14,7 @@ const FastSchema = new Schema(
     },
     date: {
       type: Date,
+      unique: true,
     },
     user: {
       type: mongoose.Schema.ObjectId,
