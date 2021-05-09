@@ -1,6 +1,12 @@
 const { userService, tokenService, mailerService } = require("../services");
 const passport = require("passport");
 const config = require("../config");
+const mg = require("nodemailer-mailgun-transport");
+const nodemailer = require("nodemailer");
+const apiKey = "792fd57d35462196161a26b14bb12139-4b1aa784-2586715d";
+
+const domain = "https://api.eu.mailgun.net/v3/rayyan.com.ng";
+
 
 // @desc Register new user
 // @route POST /api/auth/register
@@ -15,6 +21,8 @@ module.exports.registerUser = async (req, res) => {
       config.jwt.emailSecret,
       "6h"
     );
+
+    
 
     const url = config.client.confirmUrl + emailToken;
 
