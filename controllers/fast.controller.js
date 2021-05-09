@@ -55,7 +55,7 @@ module.exports.getMissedFasts = asyncHandler(async (req, res) => {
 module.exports.getFasts = asyncHandler(async (req, res) => {
   const user = req.query.user;
   const fasts = await Fast.find({ user: user });
-  res.status(200).json({ status: true, total: fasts.length, data: { fasts } });
+  res.status(200).send(fasts);
 });
 
 // @desc    Get all fasts
