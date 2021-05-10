@@ -27,7 +27,7 @@ module.exports.createBulkFast = asyncHandler(async (req, res) => {
 
     bulkfasts.push(newFast);
   }
-  const fasts = await Fast.collection.insertMany(bulkfasts);
+  const fasts = await Fast.insertMany(bulkfasts);
   res.status(201).json({ success: true, data: { fasts } });
 });
 
