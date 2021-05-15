@@ -1,12 +1,15 @@
 const { userService, tokenService, mailerService } = require("../services");
 const passport = require("passport");
 const config = require("../config");
-const mg = require("nodemailer-mailgun-transport");
-const nodemailer = require("nodemailer");
-const apiKey = "792fd57d35462196161a26b14bb12139-4b1aa784-2586715d";
+const Recipient = require("mailersend").Recipient;
+const EmailParams = require("mailersend").EmailParams;
+const MailerSend = require("mailersend");
 
-const domain = "https://api.eu.mailgun.net/v3/rayyan.com.ng";
 
+
+const mailersend = new MailerSend({
+  api_key: process.env.MAILERSEND_API_KEY
+});
 
 // @desc Register new user
 // @route POST /api/auth/register
@@ -24,13 +27,18 @@ module.exports.registerUser = async (req, res) => {
 
     
 
-    const url = config.client.confirmUrl + emailToken;
+    const recipients = [new Recipient(user.email, user.firstName)];
+    const emailParams = new EmailParams()
+      .setFrom("hello@rayyyam.com.ng")
+      .setFromName("Rayyan from Jannah")
+      .setRecipients(recipients)
+      .setSubject("Asalam Alaykum")
+      .setHtml("Marhaba, asalam alaykum")
+      .setText("Marhaba, asalam alaykum");
 
-    mailerService.sendMail(user.email, "Confirm Email", "confirm-email", {
-      url: url,
-      name: user.firstName,
-    });
+    mailersend.send(emailParams);
 
+   
     res.status(201).json({
       success: true,
       token: token,

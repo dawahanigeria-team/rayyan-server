@@ -1,7 +1,6 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
-const nodemailer = require("nodemailer");
-const mg = require("nodemailer-mailgun-transport");
+
 const getUsers = async (id) => {
     const users = await User.find({}).select('-password');
     return users;
@@ -35,29 +34,6 @@ const registerUser = async (userData) => {
     const newUser = await User.create(userData);
     newUser.password = undefined;
 
-const auth = {
-  auth: {
-    api_key: "792fd57d35462196161a26b14bb12139-4b1aa784-2586715d",
-    domain: "rayyan.com.ng",
-  },
-};
-const nodemailerMailgun = nodemailer.createTransport(mg(auth));
-
-nodemailerMailgun.sendMail(
-  {
-    from: "Rayyan from Heaven <hello@rayyan.com.ng>",
-    to: newUser.email,
-    subject: "Marhaba from Rayyan",
-    text: "Asalam Alaykum, From Rayyan",
-  },
-  (err, info) => {
-    if (err) {
-        console.log(err);
-    } else {
-      console.log("Email: " + info.email);
-    }
-  }
-);
     return newUser;
 }
 
