@@ -1,15 +1,8 @@
 const { userService, tokenService, mailerService } = require("../services");
 const passport = require("passport");
 const config = require("../config");
-const Recipient = require("mailersend").Recipient;
-const EmailParams = require("mailersend").EmailParams;
-const MailerSend = require("mailersend");
 
 
-
-const mailersend = new MailerSend({
-  api_key: process.env.MAILERSEND_API_KEY
-});
 
 // @desc Register new user
 // @route POST /api/auth/register
@@ -26,17 +19,6 @@ module.exports.registerUser = async (req, res) => {
     );
 
     
-
-    const recipients = [new Recipient(user.email, user.firstName)];
-    const emailParams = new EmailParams()
-      .setFrom("hello@rayyyam.com.ng")
-      .setFromName("Rayyan from Jannah")
-      .setRecipients(recipients)
-      .setSubject("Asalam Alaykum")
-      .setHtml("Marhaba, asalam alaykum")
-      .setText("Marhaba, asalam alaykum");
-
-    mailersend.send(emailParams);
 
    
     res.status(201).json({
