@@ -23,8 +23,10 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.3",
+    "google-auth-library": "^7.14.0",
     "helmet": "^4.3.1",
     "mongoose": "^5.11.11",
+    "node-mailjet": "^3.3.7",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
-    "mocha": "^8.3.2"
+    "mocha": "^8.3.2",
+    "nodemon": "^2.0.15"
   }
 }

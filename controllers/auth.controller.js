@@ -2,8 +2,6 @@ const { userService, tokenService, mailerService } = require("../services");
 const passport = require("passport");
 const config = require("../config");
 
-
-
 // @desc Register new user
 // @route POST /api/auth/register
 // @access Public
@@ -18,9 +16,6 @@ module.exports.registerUser = async (req, res) => {
       "6h"
     );
 
-    
-
-   
     res.status(201).json({
       success: true,
       token: token,
@@ -37,24 +32,18 @@ module.exports.registerUser = async (req, res) => {
 module.exports.sendResetPasswordEmail = async (req, res) => {
   try {
     const { email } = req.body;
-
     const user = await userService.getUserByOpts({ email });
+
     if (!user) {
       return res.status(404).send({ message: "user not found" });
     }
-
     const emailToken = tokenService.createToken(
       { id: user.id, email: user.email },
       config.jwt.emailSecret,
       "1h"
     );
-
     const url = config.client.resetUrl + emailToken;
-
-    mailerService.sendMail(email, "Reset Password", "forgot-password-email", {
-      url: url,
-      name: "",
-    });
+    const mailerRes = await mailerService.sendMail(email, url, user.firstName);
     res.status(200).send({ message: "success" });
   } catch (error) {
     res.status(400).send({ message: error.message });
@@ -125,4 +114,11 @@ module.exports.authThirdPartyCallback = (req, res) => {
   });
   const url = config.client.oauthRedirectUrl + "?token=" + token;
   res.redirect(url);
+};
+
+module.exports.constinueWithGoogle = (req, res) => {
+  const token = req.params.token;
+  const userPayload = tokenService.verifyAccessToken(token);
+  console.log(userPayload);
+  res.status(201).json({ message: "successful signin with google" });
 };
