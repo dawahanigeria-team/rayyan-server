@@ -61,7 +61,7 @@ app.use("/", (req, res) => {
 app.use(errorHandler);
 // handle celebrate errors and server errors
 
-const PORT = 5000;
+const PORT = config.PORT || 5000;
 app.listen(PORT, () => console.log(`server running on PORT: ${PORT}`));
 
 module.exports = app;
