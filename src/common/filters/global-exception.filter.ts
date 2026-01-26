@@ -19,13 +19,23 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | object = 'Internal server error';
+    let errors: string[] | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      message = typeof exceptionResponse === 'string' 
-        ? exceptionResponse 
-        : exceptionResponse;
+      
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const body = exceptionResponse as any;
+        if (Array.isArray(body.message)) {
+          message = 'Validation failed';
+          errors = body.message;
+        } else {
+          message = body.message || body;
+        }
+      }
     } else if (exception instanceof Error) {
       message = exception.message;
     }
@@ -36,6 +46,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
       message: message,
+      errors: errors,
     };
 
     // Log error details (without sensitive information)

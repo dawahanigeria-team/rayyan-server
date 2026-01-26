@@ -16,7 +16,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      disableErrorMessages: configService.get('nodeEnv') === 'production',
+      disableErrorMessages: false,
       validationError: {
         target: false,
         value: false,

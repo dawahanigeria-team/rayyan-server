@@ -111,18 +111,18 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Test OAuth error scenarios
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [-] 5. Checkpoint - Authentication Complete
+- [x] 5. Checkpoint - Authentication Complete
   - Ensure all authentication tests pass, ask the user if questions arise.
 
 - [ ] 6. Users Module Implementation
-  - [ ] 6.1 Create Users module structure
+  - [x] 6.1 Create Users module structure
     - Generate Users module, controller, and service
     - Set up user repository pattern with Mongoose
     - Create user DTOs for create and update operations
     - Implement user service methods
     - _Requirements: 6.1, 6.2, 6.4_
 
-  - [ ] 6.2 Implement user management service methods
+  - [-] 6.2 Implement user management service methods
     - Create findUserByEmail and findUserById methods
     - Implement createUser with validation
     - Add updateUser method with partial updates
