@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DatabaseModule } from './database';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -26,6 +27,7 @@ import { plainToClass } from 'class-transformer';
         return validatedConfig;
       },
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

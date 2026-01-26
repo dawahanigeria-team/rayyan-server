@@ -7,14 +7,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
 ## Tasks
 
 - [ ] 1. Project Setup and Core Infrastructure
-  - [-] 1.1 Initialize NestJS project with TypeScript configuration
+  - [x] 1.1 Initialize NestJS project with TypeScript configuration
     - Create new NestJS project with CLI
     - Configure TypeScript with strict mode
     - Set up ESLint and Prettier for code quality
     - Configure environment variables with validation
     - _Requirements: 9.11_
 
-  - [ ] 1.2 Set up MongoDB connection and Mongoose integration
+  - [-] 1.2 Set up MongoDB connection and Mongoose integration
     - Install and configure Mongoose for NestJS
     - Create database connection module
     - Set up MongoDB connection with proper error handling
