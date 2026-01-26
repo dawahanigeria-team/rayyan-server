@@ -25,7 +25,11 @@ export class MailService {
   constructor(private readonly configService: ConfigService) {
     const url = this.configService.get<string>('zeptomail.url', 'api.zeptomail.com/');
     const token = this.configService.get<string>('zeptomail.token');
-    
+
+    this.logger.log(`ZeptoMail Configuration:`);
+    this.logger.log(`- URL: ${url}`);
+    this.logger.log(`- Token configured: ${token ? 'Yes (length: ' + token.length + ')' : 'No'}`);
+
     if (!token) {
       this.logger.warn('ZeptoMail token not configured. Email functionality will be disabled.');
       // Use a dummy token to prevent initialization errors
@@ -36,6 +40,9 @@ export class MailService {
 
     this.fromAddress = this.configService.get<string>('zeptomail.fromAddress', 'noreply@rayyan.app');
     this.fromName = this.configService.get<string>('zeptomail.fromName', 'Rayyan App');
+
+    this.logger.log(`- From Address: ${this.fromAddress}`);
+    this.logger.log(`- From Name: ${this.fromName}`);
   }
 
   async sendPasswordResetEmail(data: PasswordResetEmailData): Promise<EmailResponse> {
@@ -44,6 +51,9 @@ export class MailService {
 
       const htmlBody = this.generatePasswordResetHtml(name, resetUrl, resetToken);
       const textBody = this.generatePasswordResetText(name, resetUrl, resetToken);
+
+      this.logger.debug(`Attempting to send password reset email to ${to}`);
+      this.logger.debug(`Using from address: ${this.fromAddress}, name: ${this.fromName}`);
 
       const response = await this.client.sendMail({
         from: {
@@ -66,12 +76,14 @@ export class MailService {
       });
 
       this.logger.log(`Password reset email sent successfully to ${to}`);
+      this.logger.debug(`Response: ${JSON.stringify(response)}`);
       return {
         success: true,
         messageId: response?.data?.[0]?.message_id,
       };
     } catch (error) {
-      this.logger.error(`Failed to send password reset email to ${data.to}:`, error);
+      this.logger.error(`Failed to send password reset email to ${data.to}:`);
+      this.logger.error(JSON.stringify(error, null, 2));
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
