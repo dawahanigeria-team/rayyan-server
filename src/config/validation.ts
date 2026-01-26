@@ -60,4 +60,8 @@ export class EnvironmentVariables {
   @IsNumber()
   @Min(1)
   RATE_LIMIT_LIMIT?: number = 100;
+
+  @IsOptional()
+  @IsString()
+  CORS_ORIGINS?: string;
 }

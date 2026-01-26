@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,19 +10,34 @@ async function bootstrap() {
   // Get configuration service
   const configService = app.get(ConfigService);
 
-  // Enable global validation pipe
+  // Enable global validation pipe with class-validator
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      disableErrorMessages: configService.get('nodeEnv') === 'production',
+      validationError: {
+        target: false,
+        value: false,
+      },
     }),
   );
 
-  // Enable CORS for development
+  // Configure global exception filter for error handling
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // Configure CORS for client access
+  const allowedOrigins = configService.get('nodeEnv') === 'development'
+    ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4200']
+    : configService.get<string[]>('cors.origins') || [];
+
   app.enableCors({
-    origin: configService.get('nodeEnv') === 'development' ? true : false,
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
+    maxAge: 86400, // 24 hours
   });
 
   // Set global prefix for API routes

@@ -14,14 +14,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Configure environment variables with validation
     - _Requirements: 9.11_
 
-  - [-] 1.2 Set up MongoDB connection and Mongoose integration
+  - [x] 1.2 Set up MongoDB connection and Mongoose integration
     - Install and configure Mongoose for NestJS
     - Create database connection module
     - Set up MongoDB connection with proper error handling
     - Configure connection pooling and timeout settings
     - _Requirements: 8.1, 8.3_
 
-  - [ ] 1.3 Configure global application settings
+  - [x] 1.3 Configure global application settings
     - Set up global validation pipe with class-validator
     - Configure global exception filter for error handling
     - Set up CORS configuration for client access
