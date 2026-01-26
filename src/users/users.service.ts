@@ -2,13 +2,16 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { User, UserDocument } from './schemas/user.schema';
+import { PasswordResetToken, PasswordResetTokenDocument } from './schemas/password-reset-token.schema';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(PasswordResetToken.name) private passwordResetTokenModel: Model<PasswordResetTokenDocument>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -79,5 +82,86 @@ export class UsersService {
 
   async count(): Promise<number> {
     return this.userModel.countDocuments().exec();
+  }
+
+  async createPasswordResetToken(email: string): Promise<{ token: string; user: User } | null> {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    // Invalidate any existing tokens for this user
+    await this.passwordResetTokenModel.updateMany(
+      { user: user._id, used: false },
+      { used: true }
+    );
+
+    // Generate a secure random token
+    const token = crypto.randomBytes(32).toString('hex');
+
+    // Create new reset token
+    const resetToken = new this.passwordResetTokenModel({
+      user: user._id,
+      token,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+    });
+
+    await resetToken.save();
+
+    return { token, user };
+  }
+
+  async validatePasswordResetToken(token: string): Promise<{ valid: boolean; user?: User }> {
+    const resetToken = await this.passwordResetTokenModel
+      .findOne({
+        token,
+        used: false,
+        expiresAt: { $gt: new Date() },
+      })
+      .populate('user')
+      .exec();
+
+    if (!resetToken || !resetToken.user) {
+      return { valid: false };
+    }
+
+    return { valid: true, user: resetToken.user as unknown as User };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<boolean> {
+    const resetToken = await this.passwordResetTokenModel
+      .findOne({
+        token,
+        used: false,
+        expiresAt: { $gt: new Date() },
+      })
+      .exec();
+
+    if (!resetToken) {
+      return false;
+    }
+
+    // Hash the new password
+    const hashedPassword = await this.hashPassword(newPassword);
+
+    // Update user password
+    await this.userModel.findByIdAndUpdate(resetToken.user, {
+      password: hashedPassword,
+    });
+
+    // Mark token as used
+    resetToken.used = true;
+    await resetToken.save();
+
+    return true;
+  }
+
+  async cleanupExpiredTokens(): Promise<void> {
+    await this.passwordResetTokenModel.deleteMany({
+      $or: [
+        { expiresAt: { $lt: new Date() } },
+        { used: true },
+      ],
+    });
   }
 }

@@ -7,6 +7,7 @@ import { LoggingMiddleware } from './common';
 import { UsersModule } from './users';
 import { FastsModule } from './fasts';
 import { AuthModule } from './auth';
+import { MailModule } from './mail';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -32,6 +33,7 @@ import { plainToClass } from 'class-transformer';
       },
     }),
     DatabaseModule,
+    MailModule,
     AuthModule,
     UsersModule,
     FastsModule,

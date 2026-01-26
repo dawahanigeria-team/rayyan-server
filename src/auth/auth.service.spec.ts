@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
+import { MailService } from '../mail/mail.service';
 import { LoginDto, RegisterDto } from './dto';
 import { GoogleProfile } from './strategies/google.strategy';
 import * as bcrypt from 'bcrypt';
@@ -43,6 +45,20 @@ describe('AuthService', () => {
       sign: jest.fn(),
     };
 
+    const mockMailService = {
+      sendWelcomeEmail: jest.fn(),
+      sendPasswordResetEmail: jest.fn(),
+    };
+
+    const mockConfigService = {
+      get: jest.fn((key: string, defaultValue?: any) => {
+        const config: Record<string, any> = {
+          'app.frontendUrl': 'http://localhost:3000',
+        };
+        return config[key] || defaultValue;
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -53,6 +69,14 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: mockJwtService,
+        },
+        {
+          provide: MailService,
+          useValue: mockMailService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();

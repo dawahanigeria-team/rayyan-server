@@ -1,7 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
-import { LoginDto, RegisterDto, AuthResponseDto } from './dto';
+import { MailService } from '../mail/mail.service';
+import { LoginDto, RegisterDto, AuthResponseDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { JwtPayload } from './strategies/jwt.strategy';
 import { GoogleProfile } from './strategies/google.strategy';
 import * as bcrypt from 'bcrypt';
@@ -11,6 +13,8 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+      private readonly mailService: MailService,
+      private readonly configService: ConfigService,
   ) {}
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
@@ -57,6 +61,13 @@ export class AuthService {
       email,
       password,
     });
+
+      // Send welcome email (optional, don't fail registration if email fails)
+      try {
+          await this.mailService.sendWelcomeEmail(user.email, `${user.firstName} ${user.lastName}`);
+      } catch (error) {
+          console.warn('Failed to send welcome email:', error);
+      }
 
     // Generate JWT token
     const payload: JwtPayload = { sub: user._id.toString(), email: user.email };
@@ -130,4 +141,70 @@ export class AuthService {
   private async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
+
+    async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+        const { email } = forgotPasswordDto;
+
+        // Create password reset token (returns null if user doesn't exist)
+        const result = await this.usersService.createPasswordResetToken(email);
+
+        // Always return success message for security (don't reveal if email exists)
+        if (result) {
+            const { token, user } = result;
+            const resetUrl = this.buildResetUrl(token);
+
+            // Send password reset email
+            try {
+                await this.mailService.sendPasswordResetEmail({
+                    to: user.email,
+                    name: `${user.firstName} ${user.lastName}`,
+                    resetToken: token,
+                    resetUrl,
+                });
+            } catch (error) {
+                console.error('Failed to send password reset email:', error);
+                // Don't throw error to avoid revealing email existence
+            }
+        }
+
+        return {
+            message: 'If an account with that email exists, we have sent a password reset link.',
+        };
+    }
+
+    async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+        const { token, password } = resetPasswordDto;
+
+        // Validate token and reset password
+        const success = await this.usersService.resetPassword(token, password);
+
+        if (!success) {
+            throw new BadRequestException('Invalid or expired reset token');
+        }
+
+        return {
+            message: 'Password has been reset successfully. You can now log in with your new password.',
+        };
+    }
+
+    async validateResetToken(token: string): Promise<{ valid: boolean; message?: string }> {
+        const result = await this.usersService.validatePasswordResetToken(token);
+
+        if (!result.valid) {
+            return {
+                valid: false,
+                message: 'Invalid or expired reset token',
+            };
+        }
+
+        return {
+            valid: true,
+            message: 'Token is valid',
+        };
+    }
+
+    private buildResetUrl(token: string): string {
+        const baseUrl = this.configService.get<string>('app.frontendUrl', 'http://localhost:3000');
+        return `${baseUrl}/reset-password?token=${token}`;
+    }
 }

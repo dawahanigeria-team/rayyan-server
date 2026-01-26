@@ -139,7 +139,7 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Test password hashing and validation
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [-] 7. Fasts Module Core Implementation
+- [x] 7. Fasts Module Core Implementation
   - [x] 7.1 Create Fasts module structure
     - Generate Fasts module, controller, and service
     - Set up fast repository pattern with Mongoose
@@ -154,7 +154,7 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Create updateFastStatus method
     - _Requirements: 3.1, 3.3, 3.4, 3.5, 7.3_
 
-  - [-] 7.3 Implement fast endpoints
+  - [x] 7.3 Implement fast endpoints
     - Create GET /api/fasts/?user={userId} endpoint
     - Create POST /api/fasts/?user={userId} endpoint
     - Create GET /api/fasts/{fast_id} endpoint

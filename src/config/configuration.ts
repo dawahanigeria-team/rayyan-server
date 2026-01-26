@@ -27,4 +27,13 @@ export default () => ({
       ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
       : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4200'],
   },
+  zeptomail: {
+    url: process.env.ZEPTOMAIL_URL || 'api.zeptomail.com/',
+    token: process.env.ZEPTOMAIL_TOKEN,
+    fromAddress: process.env.ZEPTOMAIL_FROM_ADDRESS || 'noreply@rayyan.app',
+    fromName: process.env.ZEPTOMAIL_FROM_NAME || 'Rayyan App',
+  },
+  app: {
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  },
 });

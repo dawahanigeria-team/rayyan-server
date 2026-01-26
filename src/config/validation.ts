@@ -64,4 +64,24 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   CORS_ORIGINS?: string;
+
+  @IsOptional()
+  @IsString()
+  ZEPTOMAIL_URL?: string;
+
+  @IsOptional()
+  @IsString()
+  ZEPTOMAIL_TOKEN?: string;
+
+  @IsOptional()
+  @IsString()
+  ZEPTOMAIL_FROM_ADDRESS?: string;
+
+  @IsOptional()
+  @IsString()
+  ZEPTOMAIL_FROM_NAME?: string;
+
+  @IsOptional()
+  @IsString()
+  FRONTEND_URL?: string;
 }
