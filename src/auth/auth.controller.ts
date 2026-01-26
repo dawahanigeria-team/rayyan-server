@@ -1,4 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Res } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, AuthResponseDto } from './dto';
 
@@ -16,5 +18,23 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // This endpoint initiates the Google OAuth flow
+    // The actual redirect is handled by Passport
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+    // The AuthResponseDto is attached to the request by the GoogleStrategy
+    const authResponse = req.user as AuthResponseDto;
+
+    // For now, we'll return the auth response as JSON
+    // In production, you might redirect to your frontend with the token
+    res.json(authResponse);
   }
 }

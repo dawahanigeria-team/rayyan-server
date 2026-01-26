@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, AuthResponseDto } from './dto';
+import { Response } from 'express';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -23,6 +24,7 @@ describe('AuthController', () => {
     const mockAuthService = {
       login: jest.fn(),
       register: jest.fn(),
+      handleGoogleAuth: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -100,6 +102,63 @@ describe('AuthController', () => {
       // Act & Assert
       await expect(controller.register(registerDto)).rejects.toThrow(error);
       expect(authService.register).toHaveBeenCalledWith(registerDto);
+    });
+  });
+
+  describe('googleAuth', () => {
+    it('should initiate Google OAuth flow', async () => {
+      // This endpoint just triggers the Google OAuth guard
+      // The actual redirect is handled by Passport
+      const result = await controller.googleAuth();
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('googleAuthCallback', () => {
+    it('should handle Google OAuth callback and return auth response', async () => {
+      // Arrange
+      const mockRequest = {
+        user: mockAuthResponse,
+      } as any;
+
+      const mockResponse = {
+        json: jest.fn(),
+      } as unknown as Response;
+
+      // Act
+      await controller.googleAuthCallback(mockRequest, mockResponse);
+
+      // Assert
+      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
+    });
+
+    it('should handle callback with user data', async () => {
+      // Arrange
+      const customAuthResponse: AuthResponseDto = {
+        access_token: 'google-jwt-token',
+        user: {
+          _id: 'google-user-id',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          email: 'jane.smith@gmail.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      };
+
+      const mockRequest = {
+        user: customAuthResponse,
+      } as any;
+
+      const mockResponse = {
+        json: jest.fn(),
+      } as unknown as Response;
+
+      // Act
+      await controller.googleAuthCallback(mockRequest, mockResponse);
+
+      // Assert
+      expect(mockResponse.json).toHaveBeenCalledWith(customAuthResponse);
     });
   });
 });

@@ -4,6 +4,7 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto, RegisterDto } from './dto';
+import { GoogleProfile } from './strategies/google.strategy';
 import * as bcrypt from 'bcrypt';
 
 // Mock bcrypt
@@ -33,7 +34,9 @@ describe('AuthService', () => {
     const mockUsersService = {
       findUserWithPassword: jest.fn(),
       findUserByEmail: jest.fn(),
+      findUserByGoogleId: jest.fn(),
       createUser: jest.fn(),
+      updateUser: jest.fn(),
     };
 
     const mockJwtService = {
@@ -220,6 +223,118 @@ describe('AuthService', () => {
         sub: user._id,
         email: user.email,
       });
+    });
+  });
+
+  describe('handleGoogleAuth', () => {
+    const mockGoogleProfile: GoogleProfile = {
+      id: 'google-123',
+      emails: [{ value: 'john.doe@example.com', verified: true }],
+      name: {
+        givenName: 'John',
+        familyName: 'Doe',
+      },
+      photos: [{ value: 'https://example.com/photo.jpg' }],
+      provider: 'google',
+    };
+
+    it('should authenticate existing user with Google ID', async () => {
+      // Arrange
+      usersService.findUserByGoogleId.mockResolvedValue(mockUser as any);
+      jwtService.sign.mockReturnValue('jwt-token-123');
+
+      // Act
+      const result = await service.handleGoogleAuth(mockGoogleProfile);
+
+      // Assert
+      expect(result).toEqual({
+        access_token: 'jwt-token-123',
+        user: {
+          _id: 'user-id-123',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          password: 'hashedPassword123',
+        },
+      });
+      expect(usersService.findUserByGoogleId).toHaveBeenCalledWith('google-123');
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: mockUser._id,
+        email: mockUser.email,
+      });
+    });
+
+    it('should link Google account to existing user with same email', async () => {
+      // Arrange
+      usersService.findUserByGoogleId.mockResolvedValue(null);
+      usersService.findUserByEmail.mockResolvedValue(mockUser as any);
+      const updatedUser = { ...mockUser, googleId: 'google-123' };
+      usersService.updateUser.mockResolvedValue(updatedUser as any);
+      jwtService.sign.mockReturnValue('jwt-token-123');
+
+      // Act
+      const result = await service.handleGoogleAuth(mockGoogleProfile);
+
+      // Assert
+      expect(result).toEqual({
+        access_token: 'jwt-token-123',
+        user: {
+          _id: 'user-id-123',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          password: 'hashedPassword123',
+          googleId: 'google-123',
+        },
+      });
+      expect(usersService.findUserByGoogleId).toHaveBeenCalledWith('google-123');
+      expect(usersService.findUserByEmail).toHaveBeenCalledWith('john.doe@example.com');
+      expect(usersService.updateUser).toHaveBeenCalledWith(mockUser._id, { googleId: 'google-123' });
+    });
+
+    it('should create new user from Google profile', async () => {
+      // Arrange
+      usersService.findUserByGoogleId.mockResolvedValue(null);
+      usersService.findUserByEmail.mockResolvedValue(null);
+      const newUser = { ...mockUser, googleId: 'google-123' };
+      usersService.createUser.mockResolvedValue(newUser as any);
+      jwtService.sign.mockReturnValue('jwt-token-123');
+
+      // Act
+      const result = await service.handleGoogleAuth(mockGoogleProfile);
+
+      // Assert
+      expect(result).toEqual({
+        access_token: 'jwt-token-123',
+        user: {
+          _id: 'user-id-123',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          password: 'hashedPassword123',
+          googleId: 'google-123',
+        },
+      });
+      expect(usersService.createUser).toHaveBeenCalledWith({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        password: expect.any(String),
+        googleId: 'google-123',
+      });
+    });
+
+    it('should throw UnauthorizedException when no email in Google profile', async () => {
+      // Arrange
+      const profileWithoutEmail: GoogleProfile = {
+        ...mockGoogleProfile,
+        emails: [],
+      };
+
+      // Act & Assert
+      await expect(service.handleGoogleAuth(profileWithoutEmail)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

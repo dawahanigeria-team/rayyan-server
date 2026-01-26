@@ -59,21 +59,21 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 3.6**
 
 - [ ] 3. Authentication Module Implementation
-  - [-] 3.1 Create authentication module structure
+  - [x] 3.1 Create authentication module structure
     - Generate Auth module, controller, and service
     - Set up JWT module configuration
     - Install and configure Passport with JWT strategy
     - Create authentication DTOs with validation
     - _Requirements: 1.1, 1.2, 9.1, 9.2_
 
-  - [ ] 3.2 Implement JWT authentication strategy
+  - [x] 3.2 Implement JWT authentication strategy
     - Create JWT strategy for token validation
     - Implement JWT guard for route protection
     - Configure token expiration and secret management
     - Set up token payload structure with user data
     - _Requirements: 1.6, 7.2_
 
-  - [ ] 3.3 Implement login and registration endpoints
+  - [x] 3.3 Implement login and registration endpoints
     - Create POST /api/auth/login endpoint
     - Create POST /api/auth/register endpoint
     - Implement password hashing with bcrypt
@@ -91,14 +91,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
 - [ ] 4. Google OAuth Integration
-  - [ ] 4.1 Set up Google OAuth strategy
+  - [x] 4.1 Set up Google OAuth strategy
     - Install and configure Passport Google OAuth2
     - Create Google strategy with profile handling
     - Set up OAuth configuration with environment variables
     - Create OAuth callback handler
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
 
-  - [ ] 4.2 Implement Google OAuth endpoints
+  - [x] 4.2 Implement Google OAuth endpoints
     - Create GET /api/auth/google endpoint for OAuth initiation
     - Create GET /api/auth/google/callback endpoint
     - Handle OAuth user creation and login
@@ -111,7 +111,7 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Test OAuth error scenarios
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 5. Checkpoint - Authentication Complete
+- [-] 5. Checkpoint - Authentication Complete
   - Ensure all authentication tests pass, ask the user if questions arise.
 
 - [ ] 6. Users Module Implementation

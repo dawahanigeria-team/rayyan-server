@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { LoginDto, RegisterDto, AuthResponseDto } from './dto';
 import { JwtPayload } from './strategies/jwt.strategy';
+import { GoogleProfile } from './strategies/google.strategy';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -82,6 +83,49 @@ export class AuthService {
     const payload: JwtPayload = { sub: user._id.toString(), email: user.email };
     return this.jwtService.sign(payload);
   }
+
+    async handleGoogleAuth(profile: GoogleProfile): Promise<AuthResponseDto> {
+        const { id: googleId, emails, name } = profile;
+        const email = emails[0]?.value;
+
+        if (!email) {
+            throw new UnauthorizedException('No email found in Google profile');
+        }
+
+        // Check if user exists with this Google ID
+        let user = await this.usersService.findUserByGoogleId(googleId);
+
+        if (!user) {
+            // Check if user exists with this email (for linking accounts)
+            user = await this.usersService.findUserByEmail(email);
+
+            if (user) {
+                // Link Google account to existing user
+                user = await this.usersService.updateUser(user._id.toString(), { googleId });
+            } else {
+                // Create new user from Google profile
+                user = await this.usersService.createUser({
+                    firstName: name.givenName,
+                    lastName: name.familyName,
+                    email,
+                    password: Math.random().toString(36).slice(-8), // Random password for OAuth users
+                    googleId,
+                });
+            }
+        }
+
+        // Generate JWT token
+        const payload: JwtPayload = { sub: user._id.toString(), email: user.email };
+        const access_token = this.jwtService.sign(payload);
+
+        // Return response without password (schema transform handles this)
+        const userResponse = JSON.parse(JSON.stringify(user));
+
+        return {
+            access_token,
+            user: userResponse,
+        };
+    }
 
   private async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
