@@ -4,6 +4,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database';
 import { LoggingMiddleware } from './common';
+import { UsersModule } from './users';
+import { FastsModule } from './fasts';
+import { AuthModule } from './auth';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -29,6 +32,9 @@ import { plainToClass } from 'class-transformer';
       },
     }),
     DatabaseModule,
+    AuthModule,
+    UsersModule,
+    FastsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

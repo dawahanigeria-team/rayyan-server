@@ -36,14 +36,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: Testing Strategy_
 
 - [ ] 2. User Entity and Database Models
-  - [ ] 2.1 Create User Mongoose schema and model
+  - [x] 2.1 Create User Mongoose schema and model
     - Define User interface with all required fields
     - Create Mongoose schema with validation rules
     - Set up indexes for email uniqueness and query optimization
     - Configure password field exclusion from queries
     - _Requirements: 6.1, 6.3, 8.1, 8.4_
 
-  - [ ] 2.2 Create Fast Mongoose schema and model
+  - [x] 2.2 Create Fast Mongoose schema and model
     - Define Fast interface with user reference
     - Create Mongoose schema with date format validation
     - Set up compound indexes for user + name uniqueness
@@ -59,7 +59,7 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 3.6**
 
 - [ ] 3. Authentication Module Implementation
-  - [ ] 3.1 Create authentication module structure
+  - [-] 3.1 Create authentication module structure
     - Generate Auth module, controller, and service
     - Set up JWT module configuration
     - Install and configure Passport with JWT strategy
