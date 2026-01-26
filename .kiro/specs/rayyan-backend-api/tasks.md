@@ -14,14 +14,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Configure environment variables with validation
     - _Requirements: 9.11_
 
-  - [~] 1.2 Set up MongoDB connection and Mongoose integration
+  - [ ] 1.2 Set up MongoDB connection and Mongoose integration
     - Install and configure Mongoose for NestJS
     - Create database connection module
     - Set up MongoDB connection with proper error handling
     - Configure connection pooling and timeout settings
     - _Requirements: 8.1, 8.3_
 
-  - [~] 1.3 Configure global application settings
+  - [ ] 1.3 Configure global application settings
     - Set up global validation pipe with class-validator
     - Configure global exception filter for error handling
     - Set up CORS configuration for client access
@@ -36,14 +36,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: Testing Strategy_
 
 - [ ] 2. User Entity and Database Models
-  - [~] 2.1 Create User Mongoose schema and model
+  - [ ] 2.1 Create User Mongoose schema and model
     - Define User interface with all required fields
     - Create Mongoose schema with validation rules
     - Set up indexes for email uniqueness and query optimization
     - Configure password field exclusion from queries
     - _Requirements: 6.1, 6.3, 8.1, 8.4_
 
-  - [~] 2.2 Create Fast Mongoose schema and model
+  - [ ] 2.2 Create Fast Mongoose schema and model
     - Define Fast interface with user reference
     - Create Mongoose schema with date format validation
     - Set up compound indexes for user + name uniqueness
@@ -59,21 +59,21 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 3.6**
 
 - [ ] 3. Authentication Module Implementation
-  - [~] 3.1 Create authentication module structure
+  - [ ] 3.1 Create authentication module structure
     - Generate Auth module, controller, and service
     - Set up JWT module configuration
     - Install and configure Passport with JWT strategy
     - Create authentication DTOs with validation
     - _Requirements: 1.1, 1.2, 9.1, 9.2_
 
-  - [~] 3.2 Implement JWT authentication strategy
+  - [ ] 3.2 Implement JWT authentication strategy
     - Create JWT strategy for token validation
     - Implement JWT guard for route protection
     - Configure token expiration and secret management
     - Set up token payload structure with user data
     - _Requirements: 1.6, 7.2_
 
-  - [~] 3.3 Implement login and registration endpoints
+  - [ ] 3.3 Implement login and registration endpoints
     - Create POST /api/auth/login endpoint
     - Create POST /api/auth/register endpoint
     - Implement password hashing with bcrypt
@@ -91,14 +91,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
 - [ ] 4. Google OAuth Integration
-  - [~] 4.1 Set up Google OAuth strategy
+  - [ ] 4.1 Set up Google OAuth strategy
     - Install and configure Passport Google OAuth2
     - Create Google strategy with profile handling
     - Set up OAuth configuration with environment variables
     - Create OAuth callback handler
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
 
-  - [~] 4.2 Implement Google OAuth endpoints
+  - [ ] 4.2 Implement Google OAuth endpoints
     - Create GET /api/auth/google endpoint for OAuth initiation
     - Create GET /api/auth/google/callback endpoint
     - Handle OAuth user creation and login
@@ -111,18 +111,18 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Test OAuth error scenarios
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [~] 5. Checkpoint - Authentication Complete
+- [ ] 5. Checkpoint - Authentication Complete
   - Ensure all authentication tests pass, ask the user if questions arise.
 
 - [ ] 6. Users Module Implementation
-  - [~] 6.1 Create Users module structure
+  - [ ] 6.1 Create Users module structure
     - Generate Users module, controller, and service
     - Set up user repository pattern with Mongoose
     - Create user DTOs for create and update operations
     - Implement user service methods
     - _Requirements: 6.1, 6.2, 6.4_
 
-  - [~] 6.2 Implement user management service methods
+  - [ ] 6.2 Implement user management service methods
     - Create findUserByEmail and findUserById methods
     - Implement createUser with validation
     - Add updateUser method with partial updates
@@ -140,21 +140,21 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
 - [ ] 7. Fasts Module Core Implementation
-  - [~] 7.1 Create Fasts module structure
+  - [ ] 7.1 Create Fasts module structure
     - Generate Fasts module, controller, and service
     - Set up fast repository pattern with Mongoose
     - Create fast DTOs for CRUD operations
     - Implement basic fast service methods
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [~] 7.2 Implement fast CRUD operations
+  - [ ] 7.2 Implement fast CRUD operations
     - Create createFast method with user association
     - Implement getUserFasts with user filtering
     - Add getFastById with ownership validation
     - Create updateFastStatus method
     - _Requirements: 3.1, 3.3, 3.4, 3.5, 7.3_
 
-  - [~] 7.3 Implement fast endpoints
+  - [ ] 7.3 Implement fast endpoints
     - Create GET /api/fasts/?user={userId} endpoint
     - Create POST /api/fasts/?user={userId} endpoint
     - Create GET /api/fasts/{fast_id} endpoint
@@ -170,14 +170,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 3.6**
 
 - [ ] 8. Advanced Fasts Features
-  - [~] 8.1 Implement missed fasts functionality
+  - [ ] 8.1 Implement missed fasts functionality
     - Create getMissedFasts service method
     - Add filtering logic for status false
     - Implement chronological ordering
     - Create GET /api/fasts/missedfast?user={userId} endpoint
     - _Requirements: 5.1, 5.2, 5.3, 9.9_
 
-  - [~] 8.2 Implement bulk fasts creation
+  - [ ] 8.2 Implement bulk fasts creation
     - Create createBulkFasts service method
     - Add transaction support for atomic operations
     - Implement validation for bulk data
@@ -193,21 +193,21 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 5.1, 5.2**
 
 - [ ] 9. Security and Validation Implementation
-  - [~] 9.1 Implement comprehensive input validation
+  - [ ] 9.1 Implement comprehensive input validation
     - Add class-validator decorators to all DTOs
     - Create custom validators for date formats
     - Implement email format validation
     - Add password strength validation
     - _Requirements: 7.1, 7.5, 1.5_
 
-  - [~] 9.2 Implement authorization guards
+  - [ ] 9.2 Implement authorization guards
     - Create ownership guard for fast resources
     - Add user context extraction from JWT
     - Implement resource access validation
     - Add role-based access control foundation
     - _Requirements: 7.2, 7.3_
 
-  - [~] 9.3 Add rate limiting and security headers
+  - [ ] 9.3 Add rate limiting and security headers
     - Install and configure rate limiting middleware
     - Add security headers with helmet
     - Implement request logging for audit
@@ -219,14 +219,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 7.2, 7.3**
 
 - [ ] 10. Error Handling and Logging
-  - [~] 10.1 Implement global exception filter
+  - [ ] 10.1 Implement global exception filter
     - Create structured error response format
     - Add request context to error responses
     - Implement error logging without sensitive data
     - Configure different error formats for development/production
     - _Requirements: 10.1, 10.2, 10.4, 10.5_
 
-  - [~] 10.2 Add comprehensive logging
+  - [ ] 10.2 Add comprehensive logging
     - Set up Winston logger with multiple transports
     - Add request/response logging middleware
     - Implement security event logging
@@ -240,14 +240,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: 10.1, 10.4, 10.5_
 
 - [ ] 11. Integration and API Testing
-  - [~] 11.1 Create integration test suite
+  - [ ] 11.1 Create integration test suite
     - Set up test database with MongoDB Memory Server
     - Create test data factories and utilities
     - Implement end-to-end API tests
     - Test complete authentication flows
     - _Requirements: All API endpoints_
 
-  - [~] 11.2 Implement API contract testing
+  - [ ] 11.2 Implement API contract testing
     - Test all endpoint response formats
     - Validate HTTP status codes
     - Test error response consistency
@@ -259,14 +259,14 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - **Validates: Requirements 9.11**
 
 - [ ] 12. Performance and Optimization
-  - [~] 12.1 Implement database optimization
+  - [ ] 12.1 Implement database optimization
     - Add appropriate indexes for query performance
     - Optimize aggregation pipelines
     - Implement connection pooling configuration
     - Add query performance monitoring
     - _Requirements: 8.3, 8.5_
 
-  - [~] 12.2 Add caching layer
+  - [ ] 12.2 Add caching layer
     - Implement Redis caching for frequently accessed data
     - Add JWT token blacklisting support
     - Cache user profile data with TTL
@@ -274,21 +274,21 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - _Requirements: Performance optimization_
 
 - [ ] 13. Final Integration and Testing
-  - [~] 13.1 Complete end-to-end testing
+  - [ ] 13.1 Complete end-to-end testing
     - Test all user workflows from registration to fast management
     - Validate OAuth integration with test Google account
     - Test error scenarios and edge cases
     - Verify security measures and access controls
     - _Requirements: All requirements_
 
-  - [~] 13.2 Performance and load testing
+  - [ ] 13.2 Performance and load testing
     - Test API performance under load
     - Validate database performance with large datasets
     - Test concurrent user scenarios
     - Verify memory usage and resource management
     - _Requirements: System performance_
 
-- [~] 14. Final Checkpoint - Complete System Validation
+- [ ] 14. Final Checkpoint - Complete System Validation
   - Ensure all tests pass, verify all requirements are met, ask the user if questions arise.
 
 ## Notes
