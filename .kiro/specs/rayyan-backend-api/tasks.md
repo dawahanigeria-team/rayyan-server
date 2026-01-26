@@ -122,7 +122,7 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Implement user service methods
     - _Requirements: 6.1, 6.2, 6.4_
 
-  - [-] 6.2 Implement user management service methods
+  - [x] 6.2 Implement user management service methods
     - Create findUserByEmail and findUserById methods
     - Implement createUser with validation
     - Add updateUser method with partial updates
@@ -139,22 +139,22 @@ This implementation plan breaks down the Rayyan Backend API development into dis
     - Test password hashing and validation
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 7. Fasts Module Core Implementation
-  - [ ] 7.1 Create Fasts module structure
+- [-] 7. Fasts Module Core Implementation
+  - [x] 7.1 Create Fasts module structure
     - Generate Fasts module, controller, and service
     - Set up fast repository pattern with Mongoose
     - Create fast DTOs for CRUD operations
     - Implement basic fast service methods
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ] 7.2 Implement fast CRUD operations
+  - [x] 7.2 Implement fast CRUD operations
     - Create createFast method with user association
     - Implement getUserFasts with user filtering
     - Add getFastById with ownership validation
     - Create updateFastStatus method
     - _Requirements: 3.1, 3.3, 3.4, 3.5, 7.3_
 
-  - [ ] 7.3 Implement fast endpoints
+  - [-] 7.3 Implement fast endpoints
     - Create GET /api/fasts/?user={userId} endpoint
     - Create POST /api/fasts/?user={userId} endpoint
     - Create GET /api/fasts/{fast_id} endpoint

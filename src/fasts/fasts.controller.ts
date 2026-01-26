@@ -58,11 +58,27 @@ export class FastsController {
   }
 
   @Post('bulkfasts')
-  async createBulkFasts(@Body() bulkFastsDto: BulkFastsDto): Promise<Fast[]> {
-    // Note: User ID should be extracted from JWT token in a real implementation
-    // For now, we'll expect it in the request body or handle it differently
-    console.log('Bulk fasts request:', bulkFastsDto);
-    throw new HttpException('Bulk fasts endpoint not fully implemented', HttpStatus.NOT_IMPLEMENTED);
+  async createBulkFasts(
+    @Query('user') userId: string,
+    @Body() bulkFastsDto: BulkFastsDto,
+  ): Promise<Fast[]> {
+    if (!userId) {
+      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+    }
+    try {
+      return await this.fastsService.createBulkFasts(userId, bulkFastsDto);
+    } catch (error: any) {
+      if (error.code === 11000) {
+        throw new HttpException(
+          'One or more fasts with these dates already exist for this user',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw new HttpException(
+        error.message || 'Failed to create bulk fasts',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Get(':id')
