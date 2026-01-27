@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
+import { InvalidCredentialsException, AccountAlreadyExistsException, InvalidTokenException } from '../common/exceptions';
 import { LoginDto, RegisterDto, AuthResponseDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { JwtPayload } from './strategies/jwt.strategy';
 import { GoogleProfile } from './strategies/google.strategy';
@@ -23,13 +24,13 @@ export class AuthService {
     // Find user by email with password
     const user = await this.usersService.findUserWithPassword(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsException('Invalid email or password');
     }
 
     // Validate password
     const isPasswordValid = await this.validatePassword(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new InvalidCredentialsException('Invalid email or password');
     }
 
     // Generate JWT token
@@ -51,7 +52,7 @@ export class AuthService {
     // Check if user already exists
     const existingUser = await this.usersService.findUserByEmail(email);
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new AccountAlreadyExistsException('An account with this email address already exists');
     }
 
     // Create user (password will be hashed by the schema pre-save middleware)
@@ -179,7 +180,7 @@ export class AuthService {
         const success = await this.usersService.resetPassword(token, password);
 
         if (!success) {
-            throw new BadRequestException('Invalid or expired reset token');
+          throw new InvalidTokenException('Invalid or expired reset token');
         }
 
         return {

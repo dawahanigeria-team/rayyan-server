@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User, UserDocument } from './schemas/user.schema';
+import { PasswordResetToken, PasswordResetTokenDocument } from './schemas/password-reset-token.schema';
+import { UserStatsService } from './services/user-stats.service';
 import { CreateUserDto } from './dto';
 
 // Mock bcrypt at the top level
@@ -15,6 +17,8 @@ jest.mock('bcrypt', () => ({
 describe('UsersService', () => {
   let service: UsersService;
   let model: Model<UserDocument>;
+  let passwordResetTokenModel: Model<PasswordResetTokenDocument>;
+  let userStatsService: UserStatsService;
 
   const mockUser = {
     _id: 'mockId',
@@ -45,6 +49,17 @@ describe('UsersService', () => {
     select: jest.fn(),
   } as any;
 
+  const mockPasswordResetTokenModel = {
+    findOne: jest.fn(),
+    updateMany: jest.fn(),
+    deleteMany: jest.fn(),
+    save: jest.fn(),
+  } as any;
+
+  const mockUserStatsService = {
+    calculateUserStats: jest.fn(),
+  } as any;
+
   beforeEach(async () => {
     // Reset all mocks
     jest.clearAllMocks();
@@ -56,11 +71,21 @@ describe('UsersService', () => {
           provide: getModelToken(User.name),
           useValue: mockUserModel,
         },
+        {
+          provide: getModelToken(PasswordResetToken.name),
+          useValue: mockPasswordResetTokenModel,
+        },
+        {
+          provide: UserStatsService,
+          useValue: mockUserStatsService,
+        },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
     model = module.get<Model<UserDocument>>(getModelToken(User.name));
+    passwordResetTokenModel = module.get<Model<PasswordResetTokenDocument>>(getModelToken(PasswordResetToken.name));
+    userStatsService = module.get<UserStatsService>(UserStatsService);
   });
 
   it('should be defined', () => {

@@ -64,7 +64,7 @@ describe('AuthController (Integration)', () => {
         })
         .expect(401);
 
-      expect(response.body.message).toBe('Invalid credentials');
+      expect(response.body.message).toBe('Invalid email or password');
     });
   });
 

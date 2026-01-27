@@ -5,13 +5,15 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { User, UserDocument } from './schemas/user.schema';
 import { PasswordResetToken, PasswordResetTokenDocument } from './schemas/password-reset-token.schema';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, UpdateUserDto, UpdateProfileDto, UserProfileResponseDto } from './dto';
+import { UserStatsService } from './services/user-stats.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(PasswordResetToken.name) private passwordResetTokenModel: Model<PasswordResetTokenDocument>,
+    private readonly userStatsService: UserStatsService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -163,5 +165,44 @@ export class UsersService {
         { used: true },
       ],
     });
+  }
+
+  async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
+    const user = await this.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    // Calculate user statistics
+    const stats = await this.userStatsService.calculateUserStats(userId);
+
+    // Transform user data to profile response format
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatar_url: user.avatar_url,
+      timezone: user.timezone,
+      preferred_language: user.preferred_language,
+      fast_goal_per_week: user.fast_goal_per_week,
+      notification_enabled: user.notification_enabled,
+      stats,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
+  }
+
+  async updateUserProfile(userId: string, updateProfileDto: UpdateProfileDto): Promise<UserProfileResponseDto> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(userId, updateProfileDto, { new: true, runValidators: true })
+      .exec();
+
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    // Return updated profile with stats
+    return this.getUserProfile(userId);
   }
 }

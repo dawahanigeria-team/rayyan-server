@@ -6,12 +6,12 @@ import {
   Body,
   Param,
   Query,
-  HttpStatus,
-  HttpException,
+  BadRequestException,
 } from '@nestjs/common';
 import { FastsService } from './fasts.service';
 import { CreateFastDto, UpdateFastStatusDto, BulkFastsDto } from './dto';
 import { Fast } from './schemas/fast.schema';
+import { ResourceNotFoundException, ResourceAlreadyExistsException } from '../common/exceptions';
 
 @Controller('fasts')
 export class FastsController {
@@ -20,7 +20,7 @@ export class FastsController {
   @Get()
   async getUserFasts(@Query('user') userId: string): Promise<Fast[]> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
     return this.fastsService.getUserFasts(userId);
   }
@@ -31,28 +31,22 @@ export class FastsController {
     @Body() createFastDto: CreateFastDto,
   ): Promise<Fast> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
     try {
       return await this.fastsService.createFast(userId, createFastDto);
     } catch (error: any) {
       if (error.code === 11000) {
-        throw new HttpException(
-          'A fast with this date already exists for this user',
-          HttpStatus.CONFLICT,
-        );
+        throw new ResourceAlreadyExistsException('Fast', 'date', createFastDto.name);
       }
-      throw new HttpException(
-        error.message || 'Failed to create fast',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException(error.message || 'Failed to create fast');
     }
   }
 
   @Get('missedfast')
   async getMissedFasts(@Query('user') userId: string): Promise<Fast[]> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
     return this.fastsService.getMissedFasts(userId);
   }
@@ -63,21 +57,15 @@ export class FastsController {
     @Body() bulkFastsDto: BulkFastsDto,
   ): Promise<Fast[]> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
     try {
       return await this.fastsService.createBulkFasts(userId, bulkFastsDto);
     } catch (error: any) {
       if (error.code === 11000) {
-        throw new HttpException(
-          'One or more fasts with these dates already exist for this user',
-          HttpStatus.CONFLICT,
-        );
+        throw new ResourceAlreadyExistsException('Fast', 'dates', 'one or more of the provided dates');
       }
-      throw new HttpException(
-        error.message || 'Failed to create bulk fasts',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException(error.message || 'Failed to create bulk fasts');
     }
   }
 
@@ -87,12 +75,12 @@ export class FastsController {
     @Query('user') userId: string,
   ): Promise<Fast> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
     
     const fast = await this.fastsService.getFastById(fastId, userId);
     if (!fast) {
-      throw new HttpException('Fast not found', HttpStatus.NOT_FOUND);
+      throw new ResourceNotFoundException('Fast', fastId);
     }
     return fast;
   }
@@ -104,7 +92,7 @@ export class FastsController {
     @Body() updateFastStatusDto: UpdateFastStatusDto,
   ): Promise<Fast> {
     if (!userId) {
-      throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User ID is required');
     }
 
     const fast = await this.fastsService.updateFastStatus(
@@ -113,7 +101,7 @@ export class FastsController {
       updateFastStatusDto,
     );
     if (!fast) {
-      throw new HttpException('Fast not found', HttpStatus.NOT_FOUND);
+      throw new ResourceNotFoundException('Fast', fastId);
     }
     return fast;
   }

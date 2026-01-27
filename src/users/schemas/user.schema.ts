@@ -61,6 +61,41 @@ export class User {
   })
   googleId?: string;
 
+  @Prop({
+    required: false,
+    trim: true,
+  })
+  avatar_url?: string;
+
+  @Prop({
+    required: false,
+    default: 'UTC',
+    trim: true,
+  })
+  timezone?: string;
+
+  @Prop({
+    required: false,
+    default: 'en',
+    trim: true,
+    enum: ['en', 'ar', 'fr', 'es'], // Add more languages as needed
+  })
+  preferred_language?: string;
+
+  @Prop({
+    required: false,
+    default: 2,
+    min: 1,
+    max: 7,
+  })
+  fast_goal_per_week?: number;
+
+  @Prop({
+    required: false,
+    default: true,
+  })
+  notification_enabled?: boolean;
+
   @Prop({ default: Date.now })
   createdAt!: Date;
 
