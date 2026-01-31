@@ -8,6 +8,9 @@ import { UsersModule } from './users';
 import { FastsModule } from './fasts';
 import { AuthModule } from './auth';
 import { MailModule } from './mail';
+import { YearBucketsModule } from './year-buckets';
+import { SakuModule } from './saku';
+import { DashboardModule } from './dashboard';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -37,6 +40,9 @@ import { plainToClass } from 'class-transformer';
     AuthModule,
     UsersModule,
     FastsModule,
+    YearBucketsModule,
+    SakuModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

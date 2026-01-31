@@ -8,16 +8,21 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { FastsService } from './fasts.service';
 import { CreateFastDto, UpdateFastStatusDto, BulkFastsDto } from './dto';
 import { Fast } from './schemas/fast.schema';
 import { ResourceNotFoundException, ResourceAlreadyExistsException } from '../common/exceptions';
 
+@ApiTags('Fasts')
 @Controller('fasts')
 export class FastsController {
   constructor(private readonly fastsService: FastsService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get user fasts', description: 'Get all fasts for a user' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'List of fasts' })
   async getUserFasts(@Query('user') userId: string): Promise<Fast[]> {
     if (!userId) {
       throw new BadRequestException('User ID is required');
@@ -26,6 +31,10 @@ export class FastsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a fast', description: 'Log a new fast for a specific date' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 201, description: 'Fast created successfully' })
+  @ApiResponse({ status: 409, description: 'Fast already exists for this date' })
   async createFast(
     @Query('user') userId: string,
     @Body() createFastDto: CreateFastDto,
@@ -44,6 +53,9 @@ export class FastsController {
   }
 
   @Get('missedfast')
+  @ApiOperation({ summary: 'Get missed fasts', description: 'Get all fasts marked as missed (status=false)' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'List of missed fasts' })
   async getMissedFasts(@Query('user') userId: string): Promise<Fast[]> {
     if (!userId) {
       throw new BadRequestException('User ID is required');
@@ -52,10 +64,14 @@ export class FastsController {
   }
 
   @Post('bulkfasts')
+  @ApiOperation({ summary: 'Create bulk fasts', description: 'Create multiple fasts at once' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 201, description: 'Fasts created successfully' })
+  @ApiResponse({ status: 409, description: 'One or more fasts already exist' })
   async createBulkFasts(
     @Query('user') userId: string,
     @Body() bulkFastsDto: BulkFastsDto,
-  ): Promise<Fast[]> {
+  ) {
     if (!userId) {
       throw new BadRequestException('User ID is required');
     }
@@ -70,6 +86,10 @@ export class FastsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get fast by ID' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'Fast details' })
+  @ApiResponse({ status: 404, description: 'Fast not found' })
   async getFastById(
     @Param('id') fastId: string,
     @Query('user') userId: string,
@@ -86,6 +106,10 @@ export class FastsController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update fast status', description: 'Update the completion status of a fast' })
+  @ApiQuery({ name: 'user', required: true, description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'Fast status updated' })
+  @ApiResponse({ status: 404, description: 'Fast not found' })
   async updateFastStatus(
     @Param('id') fastId: string,
     @Query('user') userId: string,

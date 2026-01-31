@@ -1,6 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
+export enum FastType {
+  QADA = 'qada',
+  SUNNAH = 'sunnah',
+  KAFFARAH = 'kaffarah',
+  NAFL = 'nafl',
+}
+
+export enum SunnahFastType {
+  MONDAY = 'monday',
+  THURSDAY = 'thursday',
+  WHITE_DAYS = 'white_days',
+  ASHURA = 'ashura',
+  ARAFAH = 'arafah',
+  SHAWWAL = 'shawwal',
+  SHABAN = 'shaban',
+  OTHER = 'other',
+}
+
 export type FastDocument = Fast & Document;
 
 @Schema({
@@ -52,7 +70,27 @@ export class Fast {
 
   @Prop({
     required: true,
-    default: false, // Initialize new fasts with status set to false (not observed)
+    enum: Object.values(FastType),
+    default: FastType.SUNNAH,
+  })
+  type!: FastType;
+
+  @Prop({
+    required: false,
+    enum: Object.values(SunnahFastType),
+  })
+  sunnahType?: SunnahFastType;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'YearBucket',
+    required: false,
+  })
+  yearBucket?: Types.ObjectId;
+
+  @Prop({
+    required: true,
+    default: true, // Fast is completed/observed by default when logged
   })
   status!: boolean;
 
@@ -80,6 +118,8 @@ FastSchema.index({ user: 1 }); // For efficient user-based queries
 FastSchema.index({ status: 1 }); // For missed fast queries
 FastSchema.index({ createdAt: -1 }); // For sorting by creation date
 FastSchema.index({ user: 1, status: 1 }); // Compound index for user + status queries
+FastSchema.index({ user: 1, type: 1 }); // For filtering by fast type
+FastSchema.index({ yearBucket: 1 }); // For year bucket lookups
 
 // Virtual to populate user information when needed
 FastSchema.virtual('userInfo', {

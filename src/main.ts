@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common';
 
@@ -9,6 +10,52 @@ async function bootstrap() {
 
   // Get configuration service
   const configService = app.get(ConfigService);
+
+  // Configure Swagger documentation
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Rayyan API')
+    .setDescription(`
+## Rayyan Fasting Tracker API
+
+A comprehensive API for tracking Islamic fasting practices including:
+
+- **Fasts**: Log daily fasts with types (Qada, Sunnah, Kaffarah, Nafl)
+- **Year Buckets**: Track missed fasts by year with reason breakdown
+- **Saku (Circles)**: Connect with accountability partners
+- **Dashboard**: Aggregated view of fasting status and opportunities
+- **Sunnah Opportunities**: Recommended fasting days based on Islamic calendar
+
+### Authentication
+All endpoints (except auth) require a valid JWT token in the Authorization header:
+\`Authorization: Bearer <token>\`
+    `)
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Enter your JWT token',
+      },
+      'JWT-auth',
+    )
+    .addTag('Auth', 'Authentication endpoints')
+    .addTag('Users', 'User management')
+    .addTag('Fasts', 'Fast logging and tracking')
+    .addTag('Year Buckets', 'Qada fast tracking by year')
+    .addTag('Saku', 'Circles/accountability groups')
+    .addTag('Dashboard', 'Aggregated dashboard data')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+    customSiteTitle: 'Rayyan API Documentation',
+  });
 
   // Enable global validation pipe with class-validator
   app.useGlobalPipes(

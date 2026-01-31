@@ -2,6 +2,29 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
+export enum SchoolOfThought {
+  HANAFI = 'hanafi',
+  MALIKI = 'maliki',
+  SHAFII = 'shafii',
+  HANBALI = 'hanbali',
+}
+
+export enum PrayerCalculationMethod {
+  MWL = 'mwl', // Muslim World League
+  ISNA = 'isna', // Islamic Society of North America
+  EGYPT = 'egypt', // Egyptian General Authority of Survey
+  MAKKAH = 'makkah', // Umm al-Qura University, Makkah
+  KARACHI = 'karachi', // University of Islamic Sciences, Karachi
+  TEHRAN = 'tehran', // Institute of Geophysics, University of Tehran
+  JAFARI = 'jafari', // Shia Ithna Ashari
+}
+
+export enum AccountPrivacy {
+  PUBLIC = 'public',
+  FRIENDS_ONLY = 'friends_only',
+  PRIVATE = 'private',
+}
+
 export type UserDocument = User & Document;
 
 @Schema({
@@ -95,6 +118,85 @@ export class User {
     default: true,
   })
   notification_enabled?: boolean;
+
+  // Fiqh Settings
+  @Prop({
+    required: false,
+    enum: Object.values(SchoolOfThought),
+    default: SchoolOfThought.HANAFI,
+  })
+  school_of_thought?: SchoolOfThought;
+
+  @Prop({
+    required: false,
+    enum: Object.values(PrayerCalculationMethod),
+    default: PrayerCalculationMethod.MWL,
+  })
+  prayer_calculation_method?: PrayerCalculationMethod;
+
+  // Privacy Settings
+  @Prop({
+    required: false,
+    enum: Object.values(AccountPrivacy),
+    default: AccountPrivacy.FRIENDS_ONLY,
+  })
+  account_privacy?: AccountPrivacy;
+
+  @Prop({
+    required: false,
+    default: true,
+  })
+  show_progress_in_saku?: boolean;
+
+  // Notification Preferences
+  @Prop({
+    required: false,
+    default: true,
+  })
+  notify_white_days?: boolean;
+
+  @Prop({
+    required: false,
+    default: true,
+  })
+  notify_shaban_sprint?: boolean;
+
+  @Prop({
+    required: false,
+    default: true,
+  })
+  notify_iftar_reminder?: boolean;
+
+  @Prop({
+    required: false,
+    default: true,
+  })
+  notify_monday_thursday?: boolean;
+
+  // Location for prayer times
+  @Prop({
+    required: false,
+    type: {
+      latitude: Number,
+      longitude: Number,
+      city: String,
+      country: String,
+    },
+  })
+  location?: {
+    latitude: number;
+    longitude: number;
+    city?: string;
+    country?: string;
+  };
+
+  // Appearance
+  @Prop({
+    required: false,
+    default: 'system',
+    enum: ['light', 'dark', 'system'],
+  })
+  theme?: string;
 
   @Prop({ default: Date.now })
   createdAt!: Date;

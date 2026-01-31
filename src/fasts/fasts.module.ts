@@ -3,10 +3,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FastsController } from './fasts.controller';
 import { FastsService } from './fasts.service';
 import { Fast, FastSchema } from './schemas/fast.schema';
+import { YearBucket, YearBucketSchema } from '../year-buckets/schemas/year-bucket.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Fast.name, schema: FastSchema }]),
+    MongooseModule.forFeature([
+      { name: Fast.name, schema: FastSchema },
+      { name: YearBucket.name, schema: YearBucketSchema },
+    ]),
   ],
   controllers: [FastsController],
   providers: [FastsService],
