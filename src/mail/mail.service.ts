@@ -102,8 +102,8 @@ export class MailService {
       const { to, code, name } = data;
       const displayName = name || 'there';
 
-      const htmlBody = this.generateOtpHtml(displayName, code);
-      const textBody = this.generateOtpText(displayName, code);
+      const htmlBody = this.generateOtpHtml(displayName, code, to);
+      const textBody = this.generateOtpText(displayName, code, to);
 
       this.logger.debug(`Attempting to send OTP email to ${to}`);
 
@@ -256,7 +256,9 @@ This is an automated message. Please do not reply to this email.
     `.trim();
   }
 
-  private generateOtpHtml(name: string, code: string): string {
+  private generateOtpHtml(name: string, code: string, email: string): string {
+    const deepLink = `rayyan://verify?token=${code}&email=${encodeURIComponent(email)}`;
+    
     return `
       <!DOCTYPE html>
       <html>
@@ -269,8 +271,11 @@ This is an automated message. Please do not reply to this email.
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { padding: 40px 30px; background-color: #f9f9f9; }
-          .code-box { background-color: #fff; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 30px 0; border-radius: 10px; }
+          .button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; margin: 20px 0; }
+          .button:hover { opacity: 0.9; }
+          .code-box { background-color: #fff; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 20px 0; border-radius: 10px; }
           .code { font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #667eea; font-family: 'Courier New', monospace; }
+          .divider { text-align: center; color: #888; margin: 20px 0; }
           .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; background-color: #f0f0f0; border-radius: 0 0 10px 10px; }
           .warning { font-size: 14px; color: #888; margin-top: 20px; }
         </style>
@@ -283,7 +288,13 @@ This is an automated message. Please do not reply to this email.
           </div>
           <div class="content">
             <h2>Hello ${name}!</h2>
-            <p>You requested to sign in to your Rayyan account. Use the verification code below to complete your login:</p>
+            <p>You requested to sign in to your Rayyan account. Tap the button below to open the app and complete your login:</p>
+            
+            <div style="text-align: center;">
+              <a href="${deepLink}" class="button">Open Rayyan App</a>
+            </div>
+            
+            <p class="divider">— or enter this code manually —</p>
             
             <div class="code-box">
               <div class="code">${code}</div>
@@ -305,13 +316,18 @@ This is an automated message. Please do not reply to this email.
     `;
   }
 
-  private generateOtpText(name: string, code: string): string {
+  private generateOtpText(name: string, code: string, email: string): string {
+    const deepLink = `rayyan://verify?token=${code}&email=${encodeURIComponent(email)}`;
+    
     return `
 Hello ${name}!
 
-You requested to sign in to your Rayyan account. Use the verification code below to complete your login:
+You requested to sign in to your Rayyan account.
 
-${code}
+Tap this link to open the app and sign in:
+${deepLink}
+
+Or enter this code manually: ${code}
 
 This code expires in 10 minutes.
 
