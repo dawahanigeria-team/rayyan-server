@@ -11,6 +11,8 @@ import { MailModule } from './mail';
 import { YearBucketsModule } from './year-buckets';
 import { SakuModule } from './saku';
 import { DashboardModule } from './dashboard';
+import { LedgerModule } from './ledger';
+import { CirclesModule } from './circles';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -43,6 +45,8 @@ import { plainToClass } from 'class-transformer';
     YearBucketsModule,
     SakuModule,
     DashboardModule,
+    LedgerModule,
+    CirclesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

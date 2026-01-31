@@ -9,6 +9,12 @@ export interface PasswordResetEmailData {
   resetUrl: string;
 }
 
+export interface OtpEmailData {
+  to: string;
+  code: string;
+  name?: string;
+}
+
 export interface EmailResponse {
   success: boolean;
   messageId?: string;
@@ -84,6 +90,50 @@ export class MailService {
     } catch (error) {
       this.logger.error(`Failed to send password reset email to ${data.to}:`);
       this.logger.error(JSON.stringify(error, null, 2));
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  async sendOtpEmail(data: OtpEmailData): Promise<EmailResponse> {
+    try {
+      const { to, code, name } = data;
+      const displayName = name || 'there';
+
+      const htmlBody = this.generateOtpHtml(displayName, code);
+      const textBody = this.generateOtpText(displayName, code);
+
+      this.logger.debug(`Attempting to send OTP email to ${to}`);
+
+      const response = await this.client.sendMail({
+        from: {
+          address: this.fromAddress,
+          name: this.fromName,
+        },
+        to: [
+          {
+            email_address: {
+              address: to,
+              name: displayName,
+            },
+          },
+        ],
+        subject: `${code} is your Rayyan verification code`,
+        htmlbody: htmlBody,
+        textbody: textBody,
+        track_clicks: false,
+        track_opens: false,
+      });
+
+      this.logger.log(`OTP email sent successfully to ${to}`);
+      return {
+        success: true,
+        messageId: response?.data?.[0]?.message_id,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to send OTP email to ${data.to}:`, error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -203,6 +253,76 @@ The Rayyan Team
 ---
 This is an automated message. Please do not reply to this email.
 © 2024 Rayyan App. All rights reserved.
+    `.trim();
+  }
+
+  private generateOtpHtml(name: string, code: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your Verification Code</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { padding: 40px 30px; background-color: #f9f9f9; }
+          .code-box { background-color: #fff; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 30px 0; border-radius: 10px; }
+          .code { font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #667eea; font-family: 'Courier New', monospace; }
+          .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; background-color: #f0f0f0; border-radius: 0 0 10px 10px; }
+          .warning { font-size: 14px; color: #888; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🌙 Rayyan</h1>
+            <p>Your Fasting Companion</p>
+          </div>
+          <div class="content">
+            <h2>Hello ${name}!</h2>
+            <p>You requested to sign in to your Rayyan account. Use the verification code below to complete your login:</p>
+            
+            <div class="code-box">
+              <div class="code">${code}</div>
+            </div>
+            
+            <p><strong>This code expires in 10 minutes.</strong></p>
+            
+            <p class="warning">If you didn't request this code, you can safely ignore this email. Someone may have entered your email address by mistake.</p>
+            
+            <p>May your fasting journey be blessed,<br>The Rayyan Team</p>
+          </div>
+          <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>&copy; 2026 Rayyan App. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateOtpText(name: string, code: string): string {
+    return `
+Hello ${name}!
+
+You requested to sign in to your Rayyan account. Use the verification code below to complete your login:
+
+${code}
+
+This code expires in 10 minutes.
+
+If you didn't request this code, you can safely ignore this email. Someone may have entered your email address by mistake.
+
+May your fasting journey be blessed,
+The Rayyan Team
+
+---
+This is an automated message. Please do not reply to this email.
+© 2026 Rayyan App. All rights reserved.
     `.trim();
   }
 

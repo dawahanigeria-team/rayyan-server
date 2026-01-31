@@ -8,4 +8,8 @@ export class UpdateUserDto extends PartialType(
   @IsOptional()
   @IsString()
   googleId?: string;
+
+  @IsOptional()
+  @IsString()
+  appleId?: string;
 }

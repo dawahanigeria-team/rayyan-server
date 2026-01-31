@@ -86,6 +86,13 @@ export class User {
 
   @Prop({
     required: false,
+    unique: true,
+    sparse: true,
+  })
+  appleId?: string;
+
+  @Prop({
+    required: false,
     trim: true,
   })
   avatar_url?: string;

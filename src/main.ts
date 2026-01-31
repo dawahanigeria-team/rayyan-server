@@ -88,11 +88,12 @@ All endpoints (except auth) require a valid JWT token in the Authorization heade
   });
 
   // Set global prefix for API routes
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
 
   const port = configService.get<number>('port') || 3000;
   await app.listen(port);
 
-  console.log(`🚀 Application is running on: http://localhost:${port}/api`);
+  console.log(`🚀 Application is running on: http://localhost:${port}/api/v1`);
+  console.log(`📚 API Documentation: http://localhost:${port}/docs`);
 }
 void bootstrap();
