@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { NotFoundException } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { User } from '../users/schemas/user.schema';
 import { Saku } from '../saku/schemas/saku.schema';
@@ -164,5 +165,11 @@ describe('HomeService', () => {
       dates: ['2026-02-04'],
       isActive: true,
     });
+  });
+
+  it('should throw NotFoundException when user is missing', async () => {
+    (userModel.findById as jest.Mock).mockResolvedValue(null);
+
+    await expect(service.getDashboard(userId)).rejects.toBeInstanceOf(NotFoundException);
   });
 });

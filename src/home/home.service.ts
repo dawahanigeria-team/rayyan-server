@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
@@ -62,7 +62,7 @@ export class HomeService {
   async getDashboard(userId: string): Promise<HomeDashboardData> {
     const user = await this.userModel.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const [todayFast, ledgerSummary, yearBuckets, primaryBucket, saku] =
