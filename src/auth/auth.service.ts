@@ -53,6 +53,7 @@ export class AuthService {
     
     return {
       access_token,
+      accessToken: access_token,
       user: userResponse,
     };
   }
@@ -90,6 +91,7 @@ export class AuthService {
 
     return {
       access_token,
+      accessToken: access_token,
       user: userResponse,
     };
   }
@@ -144,10 +146,11 @@ export class AuthService {
         // Return response without password (schema transform handles this)
         const userResponse = JSON.parse(JSON.stringify(user));
 
-        return {
-            access_token,
-            user: userResponse,
-        };
+    return {
+      access_token,
+      accessToken: access_token,
+      user: userResponse,
+    };
     }
 
   private async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
@@ -404,6 +407,8 @@ export class AuthService {
     return {
       accessToken,
       refreshToken: refreshTokenValue,
+      access_token: accessToken,
+      refresh_token: refreshTokenValue,
       user: {
         id: user._id.toString(),
         email: user.email,
