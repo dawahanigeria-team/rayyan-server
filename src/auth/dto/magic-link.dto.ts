@@ -37,6 +37,12 @@ export class AuthTokenResponseDto {
   @ApiProperty({ description: 'JWT refresh token for obtaining new access tokens' })
   refreshToken!: string;
 
+  @ApiProperty({ description: 'Legacy access token alias (snake_case)' })
+  access_token?: string;
+
+  @ApiProperty({ description: 'Legacy refresh token alias (snake_case)' })
+  refresh_token?: string;
+
   @ApiProperty({ description: 'User information' })
   user!: {
     id: string;

@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
+import { getModelToken } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
-import { LoginDto, RegisterDto } from './dto';
+import { LoginDto, RegisterDto, VerifyOtpDto } from './dto';
 import { GoogleProfile } from './strategies/google.strategy';
+import { Otp } from './schemas/otp.schema';
+import { RefreshToken } from './schemas/refresh-token.schema';
+import { InvalidCredentialsException, AccountAlreadyExistsException } from '../common/exceptions';
 import * as bcrypt from 'bcrypt';
 
 // Mock bcrypt
@@ -17,6 +21,8 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
+  let otpModel: { findOne: jest.Mock };
+  let refreshTokenModel: { create: jest.Mock };
 
   const mockUser = {
     _id: 'user-id-123',
@@ -59,9 +65,25 @@ describe('AuthService', () => {
       }),
     };
 
+    otpModel = {
+      findOne: jest.fn(),
+    };
+
+    refreshTokenModel = {
+      create: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        {
+          provide: getModelToken(Otp.name),
+          useValue: otpModel,
+        },
+        {
+          provide: getModelToken(RefreshToken.name),
+          useValue: refreshTokenModel,
+        },
         {
           provide: UsersService,
           useValue: mockUsersService,
@@ -106,8 +128,9 @@ describe('AuthService', () => {
       const result = await service.login(loginDto);
 
       // Assert
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         access_token: 'jwt-token-123',
+        accessToken: 'jwt-token-123',
         user: {
           _id: 'user-id-123',
           firstName: 'John',
@@ -128,7 +151,7 @@ describe('AuthService', () => {
       usersService.findUserWithPassword.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(InvalidCredentialsException);
       expect(usersService.findUserWithPassword).toHaveBeenCalledWith(loginDto.email);
     });
 
@@ -138,7 +161,7 @@ describe('AuthService', () => {
       mockedBcrypt.compare.mockResolvedValue(false as never);
 
       // Act & Assert
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(InvalidCredentialsException);
       expect(mockedBcrypt.compare).toHaveBeenCalledWith(loginDto.password, mockUser.password);
     });
   });
@@ -161,8 +184,9 @@ describe('AuthService', () => {
       const result = await service.register(registerDto);
 
       // Assert
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         access_token: 'jwt-token-123',
+        accessToken: 'jwt-token-123',
         user: {
           _id: 'user-id-123',
           firstName: 'John',
@@ -184,7 +208,7 @@ describe('AuthService', () => {
       usersService.findUserByEmail.mockResolvedValue(mockUser as any);
 
       // Act & Assert
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(AccountAlreadyExistsException);
       expect(usersService.findUserByEmail).toHaveBeenCalledWith(registerDto.email);
       expect(usersService.createUser).not.toHaveBeenCalled();
     });
@@ -232,6 +256,43 @@ describe('AuthService', () => {
     });
   });
 
+  describe('verifyOtp', () => {
+    const verifyOtpDto: VerifyOtpDto = {
+      email: 'john.doe@example.com',
+      code: '123456',
+    };
+
+    it('should return both access token aliases', async () => {
+      const mockOtpDoc = {
+        code: 'hashed-code',
+        attempts: 0,
+        used: false,
+        save: jest.fn(),
+      };
+
+      otpModel.findOne.mockReturnValue({
+        sort: jest.fn().mockResolvedValue(mockOtpDoc),
+      });
+
+      usersService.findUserByEmail.mockResolvedValue(mockUser as any);
+      mockedBcrypt.compare.mockResolvedValue(true as never);
+      jwtService.sign.mockReturnValue('jwt-token-123');
+
+      const result = await service.verifyOtp(verifyOtpDto);
+
+      expect(result.accessToken).toBe('jwt-token-123');
+      expect(result.access_token).toBe('jwt-token-123');
+      expect(result.refreshToken).toBeDefined();
+      expect(result.refresh_token).toBeDefined();
+      expect(result.user).toEqual({
+        id: mockUser._id,
+        email: mockUser.email,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+      });
+    });
+  });
+
   describe('generateJwtToken', () => {
     it('should generate JWT token for user', () => {
       // Arrange
@@ -271,8 +332,9 @@ describe('AuthService', () => {
       const result = await service.handleGoogleAuth(mockGoogleProfile);
 
       // Assert
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         access_token: 'jwt-token-123',
+        accessToken: 'jwt-token-123',
         user: {
           _id: 'user-id-123',
           firstName: 'John',
@@ -300,8 +362,9 @@ describe('AuthService', () => {
       const result = await service.handleGoogleAuth(mockGoogleProfile);
 
       // Assert
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         access_token: 'jwt-token-123',
+        accessToken: 'jwt-token-123',
         user: {
           _id: 'user-id-123',
           firstName: 'John',
@@ -328,8 +391,9 @@ describe('AuthService', () => {
       const result = await service.handleGoogleAuth(mockGoogleProfile);
 
       // Assert
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         access_token: 'jwt-token-123',
+        accessToken: 'jwt-token-123',
         user: {
           _id: 'user-id-123',
           firstName: 'John',
