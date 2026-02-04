@@ -13,6 +13,7 @@ import { SakuModule } from './saku';
 import { DashboardModule } from './dashboard';
 import { LedgerModule } from './ledger';
 import { CirclesModule } from './circles';
+import { HomeModule } from './home';
 import configuration from './config/configuration';
 import { EnvironmentVariables } from './config/validation';
 import { validateSync } from 'class-validator';
@@ -47,6 +48,7 @@ import { plainToClass } from 'class-transformer';
     DashboardModule,
     LedgerModule,
     CirclesModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

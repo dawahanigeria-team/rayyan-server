@@ -44,6 +44,7 @@ All endpoints (except auth) require a valid JWT token in the Authorization heade
     .addTag('Fasts', 'Fast logging and tracking')
     .addTag('Year Buckets', 'Qada fast tracking by year')
     .addTag('Saku', 'Circles/accountability groups')
+    .addTag('Home', 'Aggregated home screen data')
     .addTag('Dashboard', 'Aggregated dashboard data')
     .build();
 

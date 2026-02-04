@@ -4,6 +4,7 @@ import { FastsController } from './fasts.controller';
 import { FastsService } from './fasts.service';
 import { Fast, FastSchema } from './schemas/fast.schema';
 import { YearBucket, YearBucketSchema } from '../year-buckets/schemas/year-bucket.schema';
+import { YearBucketsModule } from '../year-buckets/year-buckets.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { YearBucket, YearBucketSchema } from '../year-buckets/schemas/year-bucke
       { name: Fast.name, schema: FastSchema },
       { name: YearBucket.name, schema: YearBucketSchema },
     ]),
+    YearBucketsModule,
   ],
   controllers: [FastsController],
   providers: [FastsService],
